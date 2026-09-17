@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AwarenessRouteImport } from './routes/awareness'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ReportsRouteImport } from './routes/reports'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AwarenessRoute = AwarenessRouteImport.update({
+  id: '/awareness',
+  path: '/awareness',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/awareness': typeof AwarenessRoute
+  '/dashboard': typeof DashboardRoute
+  '/reports': typeof ReportsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/awareness': typeof AwarenessRoute
+  '/dashboard': typeof DashboardRoute
+  '/reports': typeof ReportsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/awareness': typeof AwarenessRoute
+  '/dashboard': typeof DashboardRoute
+  '/reports': typeof ReportsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/awareness' | '/dashboard' | '/reports'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/awareness' | '/dashboard' | '/reports'
+  id: '__root__' | '/' | '/awareness' | '/dashboard' | '/reports'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AwarenessRoute: typeof AwarenessRoute
+  DashboardRoute: typeof DashboardRoute
+  ReportsRoute: typeof ReportsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/awareness': {
+      id: '/awareness'
+      path: '/awareness'
+      fullPath: '/awareness'
+      preLoaderRoute: typeof AwarenessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AwarenessRoute: AwarenessRoute,
+  DashboardRoute: DashboardRoute,
+  ReportsRoute: ReportsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
