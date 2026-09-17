@@ -7,6 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { Radar, ShieldCheck } from "lucide-react";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -77,19 +78,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "CyberGuard — Live Cyber Threat Awareness" },
+      {
+        name: "description",
+        content:
+          "CyberGuard tracks live cyber threats, risk levels, affected populations and protection guidance.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
@@ -114,13 +118,62 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
+const navItems = [
+  { to: "/", label: "Threat feed" },
+  { to: "/dashboard", label: "Risk dashboard" },
+  { to: "/awareness", label: "Awareness" },
+  { to: "/reports", label: "Documents" },
+] as const;
+
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <div className="flex min-h-screen flex-col">
+        <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-4 px-4 py-3">
+            <Link to="/" className="flex items-center gap-2">
+              <span className="flex size-9 items-center justify-center rounded-md border border-primary/40 bg-primary/15 text-primary">
+                <ShieldCheck className="size-5" />
+              </span>
+              <span className="font-display text-lg font-bold tracking-tight">
+                Cyber<span className="text-primary">Guard</span>
+              </span>
+            </Link>
+            <nav className="flex flex-wrap items-center gap-1 text-sm">
+              {navItems.map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  activeOptions={{ exact: item.to === "/" }}
+                  className="rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                  activeProps={{ className: "bg-secondary text-foreground" }}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+            <span className="ml-auto flex items-center gap-2 label-mono">
+              <span className="pulse-dot inline-block size-2 rounded-full bg-primary text-primary" />
+              Live monitoring
+            </span>
+          </div>
+        </header>
+
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8">
+          {/* Required: nested routes render here. */}
+          <Outlet />
+        </main>
+
+        <footer className="border-t border-border py-6">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-2 px-4 label-mono">
+            <Radar className="size-3.5" />
+            CyberGuard — AI-compiled threat awareness. Always confirm critical action with your
+            security team.
+          </div>
+        </footer>
+      </div>
     </QueryClientProvider>
   );
 }
