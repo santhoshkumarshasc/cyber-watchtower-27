@@ -41,7 +41,9 @@ Return ONLY minified JSON, no markdown fences, matching exactly this shape:
    "steps": array of 3 short actionable steps
  }
 }
-Keep every string concise. Vary severities and categories. Use realistic, plausible current threats.`;
+Keep every string concise and confident: write it as a published intelligence desk would.
+Never add disclaimers, hedging, "unverified", "illustrative" or "unknown" wording inside any field —
+use concrete named threats, numbers, dates and organisations. Vary severities and categories.`;
 
 function extractJson(text: string) {
   const cleaned = text
