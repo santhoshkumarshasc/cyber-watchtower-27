@@ -7,8 +7,10 @@ import { ExternalLink, Eye, ShieldAlert, RefreshCw } from "lucide-react";
 import { ErrorPanel, LoadingPanel } from "@/components/cyber/States";
 import { RiskBar, RiskMeter } from "@/components/cyber/RiskMeter";
 import { ThreatDetailModal } from "@/components/cyber/ThreatDetailModal";
+import { RealtimeClock } from "@/components/cyber/RealtimeClock";
 import { briefingQueryOptions } from "@/lib/threat-queries";
 import { severityStyles, type Threat } from "@/lib/threat-types";
+import { useMinuteTicker } from "@/lib/threat-utils";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -39,6 +41,9 @@ const chartColors = [
 
 function DashboardPage() {
   const { data, isPending, error, refetch, isFetching } = useQuery(briefingQueryOptions);
+  // Re-evaluates minute clock telemetry every 30 seconds
+  useMinuteTicker(30);
+
   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
 
   if (isPending) return <LoadingPanel label="Building risk model" />;
@@ -69,12 +74,15 @@ function DashboardPage() {
           type="button"
           onClick={() => refetch()}
           disabled={isFetching}
-          className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs sm:text-sm font-medium hover:bg-secondary transition-colors"
+          className="flex items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-xs sm:text-sm font-medium hover:bg-secondary transition-colors cursor-pointer"
         >
           <RefreshCw className={`size-3.5 ${isFetching ? "animate-spin text-primary" : ""}`} />
           <span>Refresh Analysis</span>
         </button>
       </header>
+
+      {/* Real-time Telemetry Reference */}
+      <RealtimeClock variant="banner" />
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {/* Risk Gauge */}

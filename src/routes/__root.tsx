@@ -6,24 +6,8 @@ import {
   useRouter,
   HeadContent,
   Scripts,
-  useLocation,
 } from "@tanstack/react-router";
-import {
-  Radar,
-  ShieldCheck,
-  Menu,
-  X,
-  ShieldAlert,
-  BarChart3,
-  BookOpen,
-  FileText,
-  Bell,
-  Activity,
-  Clock,
-  Crosshair,
-  Zap,
-  Info,
-} from "lucide-react";
+import { Radar, ShieldCheck, Menu, Zap } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -32,6 +16,9 @@ import { QuickAlertModal } from "../components/cyber/QuickAlertModal";
 import { ThemeSelector } from "../components/cyber/ThemeSelector";
 import { CyberPreloader } from "../components/cyber/CyberPreloader";
 import { CyberChatbot } from "../components/cyber/CyberChatbot";
+import { RealtimeClock } from "../components/cyber/RealtimeClock";
+import { CommandDrawer } from "../components/cyber/CommandDrawer";
+import { ScrollToTop } from "../components/cyber/ScrollToTop";
 import { getStoredTheme, applyTheme } from "../lib/theme";
 import { Toaster } from "../components/ui/sonner";
 
@@ -97,11 +84,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "CyberGuard — Live Cyber Threat Awareness" },
+      { title: "CyberGuard — Real-Time Cybersecurity Operations Desk" },
       {
         name: "description",
         content:
-          "CyberGuard tracks live cyber threats, risk levels, affected populations and protection guidance.",
+          "CyberGuard tracks live cyber threats, real-time clock telemetry, risk analytics, zero-day CVE disclosures, and defensive containment guidance.",
+      },
+      { property: "og:title", content: "CyberGuard — Real-Time Cybersecurity Operations Desk" },
+      {
+        property: "og:description",
+        content:
+          "CyberGuard tracks live cyber threats, real-time clock telemetry, risk analytics, zero-day CVE disclosures, and defensive containment guidance.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -112,7 +105,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Orbitron:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Rajdhani:wght@500;600;700&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
@@ -137,20 +130,9 @@ function RootShell({ children }: { children: ReactNode }) {
   );
 }
 
-const navItems = [
-  { to: "/", label: "Live Threat Desk", shortLabel: "Home", icon: ShieldAlert },
-  { to: "/timeline", label: "Incident Timeline", shortLabel: "Timeline", icon: Clock },
-  { to: "/hunting", label: "Threat Hunting", shortLabel: "Hunting", icon: Crosshair },
-  { to: "/dashboard", label: "Risk Analytics", shortLabel: "Analytics", icon: BarChart3 },
-  { to: "/awareness", label: "Security Awareness", shortLabel: "Awareness", icon: BookOpen },
-  { to: "/reports", label: "Advisories & Docs", shortLabel: "Docs", icon: FileText },
-  { to: "/about", label: "About CyberGuard", shortLabel: "About", icon: Info },
-] as const;
-
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
+  const [commandDrawerOpen, setCommandDrawerOpen] = useState(false);
 
   useEffect(() => {
     applyTheme(getStoredTheme());
@@ -158,64 +140,44 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col bg-background text-foreground pb-20 sm:pb-24 md:pb-0">
+      <div className="flex min-h-screen flex-col bg-background text-foreground">
         {/* Telemetry Boot Preloader */}
         <CyberPreloader />
 
-        {/* Top Navbar */}
+        {/* Clean, Unified Top Navbar with Verified Indicator and Universal Menu Button */}
         <header className="sticky top-0 z-40 border-b border-border bg-background/92 backdrop-blur-md">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3 px-3.5 py-2.5 sm:px-6 sm:py-3">
-            {/* Brand */}
-            <Link
-              to="/"
-              className="flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-primary rounded shrink-0"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              <span className="flex size-8 sm:size-9 items-center justify-center rounded-md border border-primary/40 bg-primary/15 text-primary shadow-xs">
-                <ShieldCheck className="size-4.5 sm:size-5" />
+            {/* Brand & Verified Desk Status */}
+            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+              <Link
+                to="/"
+                className="flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-primary rounded shrink-0"
+              >
+                <span className="flex size-8 sm:size-9 items-center justify-center rounded-md border border-primary/40 bg-primary/15 text-primary shadow-xs">
+                  <ShieldCheck className="size-4.5 sm:size-5" />
+                </span>
+                <div className="flex flex-col">
+                  <span className="font-display text-base sm:text-lg font-bold tracking-tight leading-none">
+                    Cyber<span className="text-primary">Guard</span>
+                  </span>
+                  <span className="font-mono text-[0.62rem] text-muted-foreground tracking-wider">
+                    DEFENSE DESK
+                  </span>
+                </div>
+              </Link>
+
+              {/* Verified Intelligence Only Badge */}
+              <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 sm:px-2.5 py-0.5 text-[0.68rem] font-mono text-emerald-400">
+                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span>VERIFIED INTEL ONLY</span>
               </span>
-              <div className="flex flex-col">
-                <span className="font-display text-base sm:text-lg font-bold tracking-tight leading-none">
-                  Cyber<span className="text-primary">Guard</span>
-                </span>
-                <span className="hidden sm:inline font-mono text-[0.62rem] text-muted-foreground tracking-wider">
-                  DEFENSE DESK
-                </span>
-              </div>
-            </Link>
+            </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden xl:flex items-center gap-1 text-xs lg:text-sm">
-              {navItems.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  activeOptions={{ exact: item.to === "/" }}
-                  className="rounded-md px-2.5 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                  activeProps={{ className: "bg-secondary text-foreground font-medium" }}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Compact desktop navigation for medium screens */}
-            <nav className="hidden md:flex xl:hidden items-center gap-0.5 text-xs">
-              {navItems.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  activeOptions={{ exact: item.to === "/" }}
-                  className="rounded-md px-2 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                  activeProps={{ className: "bg-secondary text-foreground font-medium" }}
-                >
-                  {item.shortLabel}
-                </Link>
-              ))}
-            </nav>
-
-            {/* Action Area: Theme Selector, Quick Alert, Notifications, Mobile Toggle */}
+            {/* Action Area: Realtime Clock, Theme Selector, Notifications, and the dedicated Operations Menu Button */}
             <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+              {/* Live Ticking Real-Time SOC Clock */}
+              <RealtimeClock variant="navbar" />
+
               {/* Theme Selector */}
               <ThemeSelector />
 
@@ -224,80 +186,31 @@ function RootComponent() {
                 triggerButton={
                   <button
                     type="button"
-                    className="inline-flex items-center gap-1 sm:gap-1.5 rounded-md bg-destructive/90 px-2 sm:px-2.5 py-1.5 text-xs font-semibold text-destructive-foreground hover:bg-destructive shadow-xs transition-colors cursor-pointer shrink-0"
+                    className="hidden sm:inline-flex items-center gap-1 sm:gap-1.5 rounded-md bg-destructive/90 px-2 sm:px-2.5 py-1.5 text-xs font-semibold text-destructive-foreground hover:bg-destructive shadow-xs transition-colors cursor-pointer shrink-0"
                     title="Dispatch Quick Threat Alert"
                   >
                     <Zap className="size-3.5 shrink-0" />
-                    <span className="hidden sm:inline">Quick Alert</span>
+                    <span>Quick Alert</span>
                   </button>
                 }
               />
 
-              <span className="hidden 2xl:flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs label-mono">
-                <span className="pulse-dot inline-block size-2 rounded-full bg-primary text-primary" />
-                <span>Live stream</span>
-              </span>
-
               {/* Notification Center Popover */}
               <NotificationCenter />
 
-              {/* Mobile Hamburger Toggle */}
+              {/* Universal Operations Hamburger Menu Button (The single primary navigation control on navbar) */}
               <button
                 type="button"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Toggle Navigation Menu"
-                className="flex size-8 sm:size-9 items-center justify-center rounded-md border border-border bg-card text-foreground md:hidden hover:bg-secondary focus:outline-none cursor-pointer"
+                onClick={() => setCommandDrawerOpen(true)}
+                aria-label="Open Operations Menu"
+                title="Open Operations Command Menu"
+                className="flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-md border border-primary/40 bg-primary/10 text-foreground hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary shadow-xs shrink-0 group"
               >
-                {mobileMenuOpen ? <X className="size-4.5" /> : <Menu className="size-4.5" />}
+                <Menu className="size-4 shrink-0 text-primary group-hover:text-primary-foreground" />
+                <span className="font-mono text-xs font-semibold">Menu</span>
               </button>
             </div>
           </div>
-
-          {/* Mobile Slide-down Menu */}
-          {mobileMenuOpen && (
-            <div className="border-t border-border bg-card/98 backdrop-blur-md px-4 py-4 md:hidden animate-in fade-in slide-in-from-top-2 duration-200 shadow-xl max-h-[80vh] overflow-y-auto">
-              <div className="flex items-center justify-between pb-3 border-b border-border/60 mb-2">
-                <span className="label-mono text-xs text-primary font-bold">
-                  CYBERGUARD PLATFORM
-                </span>
-                <span className="flex items-center gap-1.5 text-[0.68rem] text-muted-foreground label-mono">
-                  <span className="size-2 rounded-full bg-primary animate-pulse" />
-                  Telemetry Active
-                </span>
-              </div>
-              <nav className="flex flex-col gap-1 text-sm">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive =
-                    item.to === "/"
-                      ? location.pathname === "/"
-                      : location.pathname.startsWith(item.to);
-                  return (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors cursor-pointer ${
-                        isActive
-                          ? "bg-primary/15 text-primary font-semibold border border-primary/30"
-                          : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                      }`}
-                    >
-                      <Icon className="size-4 text-primary shrink-0" />
-                      <span>{item.label}</span>
-                    </Link>
-                  );
-                })}
-              </nav>
-
-              <div className="mt-4 pt-3 border-t border-border/60 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground font-mono">SOC Display Theme</span>
-                  <ThemeSelector />
-                </div>
-              </div>
-            </div>
-          )}
         </header>
 
         {/* Main Content Area */}
@@ -309,7 +222,7 @@ function RootComponent() {
         <CyberChatbot />
 
         {/* Footer */}
-        <footer className="border-t border-border py-6 mb-16 md:mb-0">
+        <footer className="border-t border-border py-6">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 sm:px-6 label-mono text-xs">
             <div className="flex items-center gap-2 text-muted-foreground">
               <Radar className="size-3.5 text-primary" />
@@ -320,70 +233,16 @@ function RootComponent() {
                 Methodology & About
               </Link>
               <span>&middot;</span>
-              <span>NVD &middot; CISA &middot; CERT verified</span>
+              <span>100% CISA &middot; NVD &middot; CERT Verified Feeds</span>
             </div>
           </div>
         </footer>
 
-        {/* Mobile Fixed Bottom Navigation Bar (5 clean thumb targets) */}
-        <nav className="fixed bottom-0 inset-x-0 z-40 flex items-center justify-around border-t border-border bg-background/95 backdrop-blur-md py-1.5 px-2 md:hidden">
-          <Link
-            to="/"
-            className={`flex flex-col items-center gap-0.5 px-2.5 py-1 text-[0.68rem] transition-colors ${
-              location.pathname === "/"
-                ? "text-primary font-semibold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <ShieldAlert className="size-4" />
-            <span>Home</span>
-          </Link>
+        {/* Universal Operations Command Drawer (All Screen Sizes) */}
+        <CommandDrawer isOpen={commandDrawerOpen} onClose={() => setCommandDrawerOpen(false)} />
 
-          <Link
-            to="/timeline"
-            className={`flex flex-col items-center gap-0.5 px-2.5 py-1 text-[0.68rem] transition-colors ${
-              location.pathname.startsWith("/timeline")
-                ? "text-primary font-semibold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Clock className="size-4" />
-            <span>Timeline</span>
-          </Link>
-
-          <Link
-            to="/hunting"
-            className={`flex flex-col items-center gap-0.5 px-2.5 py-1 text-[0.68rem] transition-colors ${
-              location.pathname.startsWith("/hunting")
-                ? "text-primary font-semibold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Crosshair className="size-4" />
-            <span>Hunting</span>
-          </Link>
-
-          <Link
-            to="/about"
-            className={`flex flex-col items-center gap-0.5 px-2.5 py-1 text-[0.68rem] transition-colors ${
-              location.pathname.startsWith("/about")
-                ? "text-primary font-semibold"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Info className="size-4" />
-            <span>About</span>
-          </Link>
-
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="flex flex-col items-center gap-0.5 px-2.5 py-1 text-[0.68rem] text-muted-foreground hover:text-foreground cursor-pointer"
-          >
-            <Menu className="size-4" />
-            <span>Menu</span>
-          </button>
-        </nav>
+        {/* Smooth Scroll to Top Action Button */}
+        <ScrollToTop />
 
         {/* Global Toast Notifications (Sonner) */}
         <Toaster position="bottom-right" richColors />

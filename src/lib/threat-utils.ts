@@ -1,4 +1,82 @@
+import { useState, useEffect } from "react";
 import type { Threat } from "./threat-types";
+
+// Stable session anchor to calculate dynamic real-time elapsed intervals
+let sessionAnchor = Date.now();
+
+export function getSessionAnchor(): number {
+  return sessionAnchor;
+}
+
+export function resetSessionAnchor(): void {
+  sessionAnchor = Date.now();
+}
+
+// Formats dynamic relative time anchored to current ticking clock
+export function getLiveRelativeTime(publishedLabel: string, baseAnchorMs?: number): string {
+  if (!publishedLabel) return "Recently detected";
+  const initialMins = parseRecencyMinutes(publishedLabel);
+  if (initialMins >= 99999) return publishedLabel;
+
+  const anchor = baseAnchorMs ?? sessionAnchor - initialMins * 60 * 1000;
+  const now = Date.now();
+  const elapsedMinutes = Math.max(0, Math.floor((now - anchor) / 60000));
+
+  if (elapsedMinutes < 1) return "Just now";
+  if (elapsedMinutes === 1) return "1 minute ago";
+  if (elapsedMinutes < 60) return `${elapsedMinutes} minutes ago`;
+
+  const hours = Math.floor(elapsedMinutes / 60);
+  const remMinutes = elapsedMinutes % 60;
+  if (hours === 1) {
+    return remMinutes > 0 ? `1h ${remMinutes}m ago` : "1 hour ago";
+  }
+  if (hours < 24) {
+    return remMinutes > 0 ? `${hours}h ${remMinutes}m ago` : `${hours} hours ago`;
+  }
+
+  const days = Math.floor(hours / 24);
+  return days === 1 ? "Yesterday" : `${days} days ago`;
+}
+
+// Returns absolute localized and UTC timestamp for tooltip/auditing
+export function getFormattedExactTime(
+  publishedLabel: string,
+  baseAnchorMs?: number,
+): { local: string; utc: string; iso: string } {
+  const initialMins = parseRecencyMinutes(publishedLabel);
+  const safeMins = initialMins < 99999 ? initialMins : 10;
+  const anchor = baseAnchorMs ?? sessionAnchor - safeMins * 60 * 1000;
+  const d = new Date(anchor);
+
+  return {
+    local: d.toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    }),
+    utc: d.toISOString().replace("T", " ").substring(0, 19) + " UTC",
+    iso: d.toISOString(),
+  };
+}
+
+// React hook that triggers a re-render every minute (or custom seconds) to keep all timestamps fresh
+export function useMinuteTicker(intervalSeconds: number = 30): number {
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTick((prev) => prev + 1);
+    }, intervalSeconds * 1000);
+    return () => clearInterval(timer);
+  }, [intervalSeconds]);
+
+  return tick;
+}
 
 // Parses relative time labels into approximate elapsed minutes
 export function parseRecencyMinutes(label: string): number {

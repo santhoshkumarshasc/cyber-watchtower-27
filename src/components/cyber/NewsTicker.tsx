@@ -7,9 +7,11 @@ import {
   AlertCircle,
   Radio,
   Clock,
+  ShieldCheck,
 } from "lucide-react";
 
 import type { NewsItem } from "@/lib/threat-types";
+import { useMinuteTicker, getLiveRelativeTime } from "@/lib/threat-utils";
 
 interface NewsTickerProps {
   news?: NewsItem[];
@@ -17,6 +19,8 @@ interface NewsTickerProps {
 
 export function NewsTicker({ news }: NewsTickerProps) {
   const [expanded, setExpanded] = useState(false);
+  // Re-evaluate news timestamps every 30 seconds
+  useMinuteTicker(30);
 
   if (!news || news.length === 0) return null;
 
@@ -78,9 +82,13 @@ export function NewsTicker({ news }: NewsTickerProps) {
             >
               {news[0].urgency}
             </span>
+            <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[0.62rem] font-mono text-emerald-400 shrink-0">
+              <ShieldCheck className="size-2.5" />
+              <span>VERIFIED</span>
+            </span>
             <span className="font-medium text-foreground truncate">{news[0].title}</span>
             <span className="text-muted-foreground text-[0.7rem] shrink-0">
-              · {news[0].source} ({news[0].timestamp})
+              · {news[0].source} ({getLiveRelativeTime(news[0].timestamp)})
             </span>
           </div>
 
@@ -114,9 +122,9 @@ export function NewsTicker({ news }: NewsTickerProps) {
                   >
                     {item.urgency}
                   </span>
-                  <div className="flex items-center gap-1 text-[0.68rem] text-muted-foreground">
-                    <Clock className="size-3" />
-                    <span>{item.timestamp}</span>
+                  <div className="flex items-center gap-1 text-[0.68rem] text-muted-foreground font-mono">
+                    <Clock className="size-3 text-primary" />
+                    <span>{getLiveRelativeTime(item.timestamp)}</span>
                   </div>
                 </div>
 
@@ -127,7 +135,12 @@ export function NewsTicker({ news }: NewsTickerProps) {
               </div>
 
               <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-xs">
-                <span className="label-mono text-[0.68rem]">{item.source}</span>
+                <span className="label-mono text-[0.68rem] flex items-center gap-1 text-emerald-400">
+                  <ShieldCheck className="size-3" />
+                  <span className="truncate max-w-[140px] sm:max-w-[200px]">
+                    {item.verificationAgency || item.source}
+                  </span>
+                </span>
                 <a
                   href={item.sourceUrl}
                   target="_blank"

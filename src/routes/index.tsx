@@ -8,6 +8,7 @@ import {
   SlidersHorizontal,
   ExternalLink,
   ShieldAlert,
+  ShieldCheck,
   LayoutGrid,
   List,
   ChevronDown,
@@ -33,6 +34,7 @@ import { ThreatComparisonModal } from "@/components/cyber/ThreatComparisonModal"
 import { QuickAlertModal } from "@/components/cyber/QuickAlertModal";
 import { NewsTicker } from "@/components/cyber/NewsTicker";
 import { AutoRefreshControl } from "@/components/cyber/AutoRefreshControl";
+import { RealtimeClock } from "@/components/cyber/RealtimeClock";
 import { briefingQueryOptions } from "@/lib/threat-queries";
 import { severityLevels, severityStyles, type Threat } from "@/lib/threat-types";
 import {
@@ -43,6 +45,7 @@ import {
   deleteCustomThreatAlert,
   exportThreatsAsJson,
   exportThreatsAsCsv,
+  useMinuteTicker,
 } from "@/lib/threat-utils";
 
 export const Route = createFileRoute("/")({
@@ -67,9 +70,13 @@ export const Route = createFileRoute("/")({
 
 function FeedPage() {
   const { data, isPending, error, refetch, isFetching } = useQuery(briefingQueryOptions);
+  // Re-evaluates relative timestamps & recency bucket filter every 30 seconds
+  useMinuteTicker(30);
+
   const [severity, setSeverity] = useState<string>("all");
   const [category, setCategory] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [verifiedOnly, setVerifiedOnly] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<
     "recent-to-past" | "past-to-recent" | "risk-desc" | "risk-asc" | "affected"
   >("recent-to-past");
@@ -116,7 +123,9 @@ function FeedPage() {
         matchRecency = parseRecencyMinutes(t.publishedLabel) <= 1440;
       }
 
-      return matchSeverity && matchCategory && matchSearch && matchRecency;
+      const matchVerified = !verifiedOnly || t.verified !== false;
+
+      return matchSeverity && matchCategory && matchSearch && matchRecency && matchVerified;
     });
 
     if (sortBy === "recent-to-past") {
@@ -132,7 +141,7 @@ function FeedPage() {
     }
 
     return list;
-  }, [allThreats, severity, category, search, recencyWindow, sortBy]);
+  }, [allThreats, severity, category, search, recencyWindow, sortBy, verifiedOnly]);
 
   const visibleThreats = useMemo(() => {
     return filteredThreats.slice(0, visibleCount);
@@ -206,6 +215,11 @@ function FeedPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Real-Time SOC Telemetry & Precision Clock HUD */}
+      <section>
+        <RealtimeClock variant="banner" />
       </section>
 
       {/* Quick Operations Hubs */}
@@ -346,8 +360,23 @@ function FeedPage() {
             ))}
           </div>
 
-          {/* Quick Action Tools: Recency Toggle, Compare Threats, Export */}
+          {/* Quick Action Tools: Recency Toggle, Verified Toggle, Compare Threats, Export */}
           <div className="flex flex-wrap items-center gap-2">
+            {/* Verified Only Filter Toggle */}
+            <button
+              type="button"
+              onClick={() => setVerifiedOnly(!verifiedOnly)}
+              className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-mono transition-colors cursor-pointer ${
+                verifiedOnly
+                  ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-400 font-bold shadow-xs"
+                  : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
+              }`}
+              title="Toggle Verified Intelligence Feeds Only"
+            >
+              <ShieldCheck className="size-3.5 text-emerald-400" />
+              <span>{verifiedOnly ? "Verified Feeds Only" : "All Feeds"}</span>
+            </button>
+
             {/* 1-Click Recent to Past toggle */}
             <button
               type="button"

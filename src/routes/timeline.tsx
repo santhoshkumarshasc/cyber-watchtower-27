@@ -21,6 +21,7 @@ import {
 import { ErrorPanel, LoadingPanel } from "@/components/cyber/States";
 import { ThreatDetailModal } from "@/components/cyber/ThreatDetailModal";
 import { QuickAlertModal } from "@/components/cyber/QuickAlertModal";
+import { RealtimeClock } from "@/components/cyber/RealtimeClock";
 import { briefingQueryOptions } from "@/lib/threat-queries";
 import {
   parseRecencyMinutes,
@@ -30,6 +31,9 @@ import {
   getCustomThreatAlerts,
   exportThreatsAsJson,
   exportThreatsAsCsv,
+  useMinuteTicker,
+  getLiveRelativeTime,
+  getFormattedExactTime,
 } from "@/lib/threat-utils";
 import { severityLevels, severityStyles, type Threat } from "@/lib/threat-types";
 import { RiskBar } from "@/components/cyber/RiskMeter";
@@ -55,6 +59,9 @@ export const Route = createFileRoute("/timeline")({
 
 function TimelinePage() {
   const { data, isPending, error, refetch } = useQuery(briefingQueryOptions);
+  // Re-render every 30 seconds to advance relative timeline minute counters
+  useMinuteTicker(30);
+
   const [sortOrder, setSortOrder] = useState<"recent-to-past" | "past-to-recent">("recent-to-past");
   const [selectedSeverity, setSelectedSeverity] = useState<string>("all");
   const [timeFilter, setTimeFilter] = useState<"all" | "1h" | "6h" | "24h">("all");
@@ -151,13 +158,16 @@ function TimelinePage() {
           <button
             type="button"
             onClick={() => exportThreatsAsCsv(filteredThreats)}
-            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
           >
             <FileDown className="size-3.5" />
             <span>Export CSV</span>
           </button>
         </div>
       </header>
+
+      {/* Real-time Time Reference Banner */}
+      <RealtimeClock variant="banner" />
 
       {/* Control Bar: Recency Sort Toggle, Time Brackets, Search */}
       <div className="space-y-3">
@@ -304,9 +314,12 @@ function TimelinePage() {
                 <div className="panel p-4 sm:p-5 border-border transition-all hover:border-primary/50 hover:shadow-md">
                   <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/60 pb-2.5 mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="flex items-center gap-1 font-mono text-xs font-bold text-foreground">
+                      <span
+                        className="flex items-center gap-1 font-mono text-xs font-bold text-foreground"
+                        title={`Logged: ${getFormattedExactTime(threat.publishedLabel).local} (${getFormattedExactTime(threat.publishedLabel).utc})`}
+                      >
                         <Clock className="size-3 text-primary" />
-                        {threat.publishedLabel}
+                        {getLiveRelativeTime(threat.publishedLabel)}
                       </span>
                       <span
                         className={`px-2 py-0.5 rounded text-[0.65rem] font-mono uppercase font-semibold ${

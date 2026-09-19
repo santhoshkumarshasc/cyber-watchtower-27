@@ -3,6 +3,7 @@ import {
   FileText,
   MapPin,
   ShieldAlert,
+  ShieldCheck,
   Users,
   ExternalLink,
   ChevronRight,
@@ -13,6 +14,7 @@ import {
 import { RiskBar } from "./RiskMeter";
 import { ThreatDetailModal } from "./ThreatDetailModal";
 import { severityStyles, type Threat } from "@/lib/threat-types";
+import { useMinuteTicker, getLiveRelativeTime, getFormattedExactTime } from "@/lib/threat-utils";
 
 interface ThreatCardProps {
   threat: Threat;
@@ -21,7 +23,12 @@ interface ThreatCardProps {
 
 export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
   const [modalOpen, setModalOpen] = useState(false);
+  // Re-evaluates relative timestamp whenever minute ticker fires
+  useMinuteTicker(30);
+
   const severity = severityStyles[threat.severity];
+  const liveTime = getLiveRelativeTime(threat.publishedLabel);
+  const exactTime = getFormattedExactTime(threat.publishedLabel);
 
   const sourceLink =
     threat.sourceUrl ||
@@ -52,9 +59,16 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
               {severity.label}
             </span>
             <span className="label-mono">{threat.category}</span>
-            <span className="ml-auto flex items-center gap-1 label-mono text-xs text-muted-foreground font-mono">
+            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[0.65rem] font-mono font-medium text-emerald-400">
+              <ShieldCheck className="size-3 text-emerald-400" />
+              <span>VERIFIED ADVISORY</span>
+            </span>
+            <span
+              className="ml-auto flex items-center gap-1 label-mono text-xs text-muted-foreground font-mono"
+              title={`Logged: ${exactTime.local} (${exactTime.utc})`}
+            >
               <Clock className="size-3 text-primary" />
-              <span>{threat.publishedLabel}</span>
+              <span className="font-semibold text-foreground/90">{liveTime}</span>
             </span>
           </div>
 
@@ -138,9 +152,11 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
 
         {/* Footer Actions: Source & Buttons */}
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
-          <div className="flex items-center gap-1.5 label-mono text-xs truncate max-w-[180px]">
-            <ShieldAlert className="size-3.5 text-primary shrink-0" />
-            <span className="truncate">{threat.source}</span>
+          <div className="flex items-center gap-2 label-mono text-xs truncate max-w-[220px]">
+            <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
+            <span className="truncate text-foreground font-medium">
+              {threat.verificationAgency || threat.source}
+            </span>
           </div>
 
           <div className="flex items-center gap-2 ml-auto">

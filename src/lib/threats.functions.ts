@@ -96,7 +96,7 @@ let cachedBriefing: { data: Briefing; timestamp: number } | null = null;
 let lastFailureTimestamp = 0;
 let inFlightRequest: Promise<Briefing> | null = null;
 
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes fresh cache
+const CACHE_TTL_MS = 60 * 1000; // 1 minute fresh cache for real-time cadence
 const ERROR_COOLDOWN_MS = 60 * 1000; // 1 minute cooldown if all models fail
 const CANDIDATE_MODELS = ["gemini-2.5-flash", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
 

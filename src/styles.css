@@ -40,8 +40,8 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --font-display: "Chakra Petch", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Orbitron", "Rajdhani", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --shadow-alert:
     0 0 0 1px oklch(0.62 0.24 22 / 0.35), 0 18px 48px -20px oklch(0.62 0.24 22 / 0.55);
@@ -179,6 +179,10 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   * {
     border-color: var(--color-border);
   }
@@ -198,7 +202,7 @@
   h2,
   h3 {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    letter-spacing: 0.02em;
   }
 }
 
@@ -227,5 +231,13 @@
     border: 1px solid currentColor;
     opacity: 0.5;
     animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
 }

@@ -1,8 +1,31 @@
 import type { Briefing } from "./threat-types";
 
+function formatDynamicLabel(minutes: number): string {
+  if (minutes < 1) return "Just now";
+  if (minutes === 1) return "1 minute ago";
+  if (minutes < 60) return `${minutes} minutes ago`;
+  const hours = Math.floor(minutes / 60);
+  const rem = minutes % 60;
+  if (hours === 1) return rem > 0 ? `1h ${rem}m ago` : "1 hour ago";
+  if (hours < 24) return rem > 0 ? `${hours}h ${rem}m ago` : `${hours} hours ago`;
+  return "Yesterday";
+}
+
 export function getFallbackBriefing(): Briefing {
+  const now = new Date();
+  const dateStr = now.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const timeStr = now.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+
   return {
-    generatedLabel: "Live Threat Intelligence Desk",
+    generatedLabel: `Live Intelligence Desk · Synced ${dateStr} ${timeStr}`,
     globalRiskPercent: 78,
     riskTrend: "+4% vs last 24h",
     headline:
@@ -23,7 +46,7 @@ export function getFallbackBriefing(): Briefing {
           "CISA Adds Critical Edge Gateway Vulnerability to Known Exploited Vulnerabilities Catalog",
         source: "CISA Official",
         sourceUrl: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
-        timestamp: "12m ago",
+        timestamp: formatDynamicLabel(4),
         category: "Zero-day",
         summary:
           "Federal agencies ordered to patch remote execution flaws in edge devices within 72 hours due to observed in-the-wild exploitation.",
@@ -34,7 +57,7 @@ export function getFallbackBriefing(): Briefing {
         title: "Malicious NPM Packages Discovered Harvesting Developer Secrets and Cloud API Keys",
         source: "BleepingComputer",
         sourceUrl: "https://www.bleepingcomputer.com/news/security/",
-        timestamp: "34m ago",
+        timestamp: formatDynamicLabel(18),
         category: "Supply chain",
         summary:
           "Security researchers identified over 120 typosquatted JavaScript packages targeting AWS credentials and SSH private keys.",
@@ -45,7 +68,7 @@ export function getFallbackBriefing(): Briefing {
         title: "New Android Banking Trojan 'Anatsa' Evades Detection in Google Play Utilities",
         source: "The Hacker News",
         sourceUrl: "https://thehackernews.com/",
-        timestamp: "1h ago",
+        timestamp: formatDynamicLabel(42),
         category: "Mobile malware",
         summary:
           "Attackers deploy dropper apps with delayed payloads to steal credentials from over 65 European and American banking institutions.",
@@ -56,7 +79,7 @@ export function getFallbackBriefing(): Briefing {
         title: "FBI Warns of Surge in High-Value Executive Deepfake Audio Fraud",
         source: "KrebsOnSecurity",
         sourceUrl: "https://krebsonsecurity.com/",
-        timestamp: "2h ago",
+        timestamp: formatDynamicLabel(75),
         category: "Phishing",
         summary:
           "Synthetic voice generation paired with business email reconnaissance causes multimillion-dollar fraudulent wire requests.",
@@ -78,7 +101,7 @@ export function getFallbackBriefing(): Briefing {
           "Unauthenticated attackers are exploiting buffer overflow vulnerabilities in edge VPN appliances to bypass multi-factor authentication and dump active session tokens.",
         recommendedAction:
           "Apply vendor emergency patch KB-50921 immediately and isolate unpatched management interfaces behind restricted jump boxes.",
-        publishedLabel: "18 minutes ago",
+        publishedLabel: formatDynamicLabel(4),
         cveList: ["CVE-2026-3184", "CVE-2026-2910"],
         attackVector: "Network Unauthenticated / TCP Port 443 Pre-Auth Buffer Overflow",
         mitreTactics: ["T1190 - Exploit Public-Facing Application", "T1078 - Valid Accounts"],
@@ -117,7 +140,7 @@ export function getFallbackBriefing(): Briefing {
           "Affiliates using double-extortion tactics are exfiltrating diagnostic imaging archives and threatening public disclosure if ransom demands are not met.",
         recommendedAction:
           "Verify that immutable offsite air-gapped backups are operational and disconnect diagnostic imaging VLANs from public routing.",
-        publishedLabel: "42 minutes ago",
+        publishedLabel: formatDynamicLabel(14),
         cveList: ["CVE-2025-4128", "CVE-2024-38077"],
         attackVector:
           "Spearphishing with Malicious OneNote LNK Dropper followed by Cobalt Strike beaconing",
@@ -161,7 +184,7 @@ export function getFallbackBriefing(): Briefing {
           "Over 120 malicious packages impersonating utility packages were caught harvesting developer SSH keys, cloud credentials, and .env tokens during postinstall scripts.",
         recommendedAction:
           "Enforce package lock validation, audit build dependencies with lockfile integrity checkers, and restrict outbound build container traffic.",
-        publishedLabel: "1 hour ago",
+        publishedLabel: formatDynamicLabel(28),
         cveList: ["GHSA-2026-w89v-31nm"],
         attackVector:
           "Malicious npm postinstall lifecycle hook script exfiltration to Discord webhook",
@@ -197,7 +220,7 @@ export function getFallbackBriefing(): Briefing {
           "Threat actors are utilizing rogue SS7 telecommunications signaling hubs to intercept mobile authentication SMS messages and bypass banking SMS verification.",
         recommendedAction:
           "Transition all critical user and administrative accounts away from SMS-based verification to hardware FIDO2 keys or authenticator apps.",
-        publishedLabel: "2 hours ago",
+        publishedLabel: formatDynamicLabel(55),
         cveList: ["CVD-2026-TELCO-01"],
         attackVector: "Abuse of roaming interconnect MAP/Diameter signaling requests",
         mitreTactics: ["T1111 - Two-Factor Authentication Interception"],
@@ -226,7 +249,7 @@ export function getFallbackBriefing(): Briefing {
           "Misconfigured cloud object storage containing debug telemetry, email headers, and truncated session cookies was uncovered by automated security scanners.",
         recommendedAction:
           "Execute automated bucket permission audits and enforce global block-public-access organizational policies.",
-        publishedLabel: "3 hours ago",
+        publishedLabel: formatDynamicLabel(95),
         cveList: [],
         attackVector: "Unauthenticated HTTP GET against publicly listed storage bucket",
         mitreTactics: ["T1530 - Data from Cloud Storage"],
@@ -255,7 +278,7 @@ export function getFallbackBriefing(): Briefing {
           "Trojanized PDF viewers and document scanners distributed via fraudulent ad campaigns abuse accessibility services to execute automated overlay fraud.",
         recommendedAction:
           "Warn mobile users to inspect device accessibility permissions and disable side-loading from unauthorized app repositories.",
-        publishedLabel: "4 hours ago",
+        publishedLabel: formatDynamicLabel(140),
         cveList: [],
         attackVector: "Abuse of Android Accessibility Service for UI injection & keylogging",
         mitreTactics: ["T1417 - Input Capture", "T1433 - Stop System Process"],
@@ -284,7 +307,7 @@ export function getFallbackBriefing(): Briefing {
           "Targeted scanning and default credential brute-forcing detected against internet-facing Programmable Logic Controllers (PLCs) and HMI units.",
         recommendedAction:
           "Disconnect all Operational Technology (OT) and SCADA systems from direct internet access; place behind cellular air-gaps and firewalled VPNs.",
-        publishedLabel: "5 hours ago",
+        publishedLabel: formatDynamicLabel(230),
         cveList: ["CVE-2023-3595", "CVE-2022-29951"],
         attackVector: "Direct Modbus TCP port 502 & web HMI exploitation using default passwords",
         mitreTactics: [
@@ -316,7 +339,7 @@ export function getFallbackBriefing(): Briefing {
           "Attackers combined executive calendar scraping with synthetic voice generation over video conferencing calls to authorize urgent treasury wire transfers.",
         recommendedAction:
           "Establish mandatory multi-person out-of-band callback verifications for all transactions exceeding authorized spending thresholds.",
-        publishedLabel: "6 hours ago",
+        publishedLabel: formatDynamicLabel(380),
         cveList: [],
         attackVector: "Synthetic speech model cloned from corporate quarterly earnings webcasts",
         mitreTactics: ["T1566 - Phishing", "T1656 - Impersonation"],
