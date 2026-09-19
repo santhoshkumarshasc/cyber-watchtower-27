@@ -60,9 +60,14 @@ export function saveStoredAlerts(alerts: NotificationAlert[]) {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(ALERTS_KEY, JSON.stringify(alerts.slice(0, 50)));
+    window.dispatchEvent(new CustomEvent("cyberguard:alerts-updated"));
   } catch (e) {
     console.error("Error saving notification history", e);
   }
+}
+
+export function getUnreadAlertCount(): number {
+  return getStoredAlerts().filter((a) => !a.read).length;
 }
 
 // Gentle audio alert using Web Audio API synthesis

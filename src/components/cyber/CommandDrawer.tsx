@@ -16,9 +16,12 @@ import {
   ChevronRight,
   RefreshCw,
   ExternalLink,
+  Palette,
+  Bell,
 } from "lucide-react";
 import { RealtimeClock } from "./RealtimeClock";
 import { ThemeSelector } from "./ThemeSelector";
+import { DrawerNotificationSection } from "./DrawerNotificationSection";
 import { QuickAlertModal } from "./QuickAlertModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -286,19 +289,23 @@ export function CommandDrawer({ isOpen, onClose }: CommandDrawerProps) {
             </div>
           </div>
 
-          {/* Visual Theme Selector Section */}
-          <div className="rounded-lg border border-border/70 bg-secondary/20 p-3.5">
-            <div className="flex items-center justify-between mb-2">
+          {/* Alert Notifications Center Section inside Menu */}
+          <DrawerNotificationSection />
+
+          {/* Visual Theme Selector Section inside Menu */}
+          <div className="rounded-lg border border-border/70 bg-secondary/20 p-3.5 space-y-3">
+            <div className="flex items-center justify-between">
               <span className="label-mono text-xs text-foreground font-semibold flex items-center gap-1.5">
-                <Layers className="size-3.5 text-primary" />
-                DISPLAY PALETTE
+                <Palette className="size-3.5 text-primary" />
+                SOC DISPLAY THEME
               </span>
+              <span className="font-mono text-[0.65rem] text-primary">5 SCHEMES</span>
             </div>
-            <p className="text-[0.7rem] text-muted-foreground mb-3">
-              Switch visual ambiance across Crimson SOC, Matrix Terminal, Deep Radar, Amber Alert,
-              or White Hat.
+            <p className="text-[0.7rem] text-muted-foreground leading-relaxed">
+              Switch operational visual ambiance across Crimson SOC, Matrix Terminal, Deep Radar,
+              Amber Alert, or White Hat.
             </p>
-            <ThemeSelector />
+            <ThemeSelector variant="inline" />
           </div>
 
           {/* Telemetry Health Matrix */}

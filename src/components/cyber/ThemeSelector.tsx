@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 
 import { THEME_OPTIONS, getStoredTheme, applyTheme, type ThemeId } from "@/lib/theme";
 
-export function ThemeSelector() {
+interface ThemeSelectorProps {
+  variant?: "dropdown" | "inline";
+}
+
+export function ThemeSelector({ variant = "dropdown" }: ThemeSelectorProps) {
   const [currentTheme, setCurrentTheme] = useState<ThemeId>("cyber-crimson");
   const [isOpen, setIsOpen] = useState(false);
 
@@ -20,6 +24,42 @@ export function ThemeSelector() {
   };
 
   const active = THEME_OPTIONS.find((t) => t.id === currentTheme) || THEME_OPTIONS[0];
+
+  if (variant === "inline") {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
+        {THEME_OPTIONS.map((theme) => {
+          const isSelected = theme.id === currentTheme;
+          return (
+            <button
+              key={theme.id}
+              type="button"
+              onClick={() => handleSelect(theme.id)}
+              className={`flex items-center justify-between rounded-md border p-2 text-left text-xs transition-all cursor-pointer ${
+                isSelected
+                  ? "border-primary bg-primary/10 text-foreground font-semibold shadow-xs"
+                  : "border-border/60 bg-secondary/30 hover:border-border hover:bg-secondary text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <span
+                  className="size-3.5 rounded-full border border-white/20 shrink-0 shadow-xs"
+                  style={{ backgroundColor: theme.swatchColor }}
+                />
+                <div className="min-w-0">
+                  <div className="text-[0.75rem] font-medium truncate">{theme.name}</div>
+                  <div className="text-[0.62rem] text-muted-foreground truncate">
+                    {theme.description}
+                  </div>
+                </div>
+              </div>
+              {isSelected && <Check className="size-3.5 text-primary shrink-0 ml-1" />}
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
 
   return (
     <div className="relative">

@@ -11,15 +11,14 @@ import { Radar, ShieldCheck, Menu, Zap } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { NotificationCenter } from "../components/cyber/NotificationCenter";
 import { QuickAlertModal } from "../components/cyber/QuickAlertModal";
-import { ThemeSelector } from "../components/cyber/ThemeSelector";
 import { CyberPreloader } from "../components/cyber/CyberPreloader";
 import { CyberChatbot } from "../components/cyber/CyberChatbot";
 import { RealtimeClock } from "../components/cyber/RealtimeClock";
 import { CommandDrawer } from "../components/cyber/CommandDrawer";
 import { ScrollToTop } from "../components/cyber/ScrollToTop";
 import { getStoredTheme, applyTheme } from "../lib/theme";
+import { getUnreadAlertCount } from "../lib/notification-manager";
 import { Toaster } from "../components/ui/sonner";
 
 function NotFoundComponent() {
@@ -133,9 +132,19 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [commandDrawerOpen, setCommandDrawerOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     applyTheme(getStoredTheme());
+    setUnreadCount(getUnreadAlertCount());
+
+    const handleAlertsUpdated = () => {
+      setUnreadCount(getUnreadAlertCount());
+    };
+    window.addEventListener("cyberguard:alerts-updated", handleAlertsUpdated);
+    return () => {
+      window.removeEventListener("cyberguard:alerts-updated", handleAlertsUpdated);
+    };
   }, []);
 
   return (
@@ -173,13 +182,10 @@ function RootComponent() {
               </span>
             </div>
 
-            {/* Action Area: Realtime Clock, Theme Selector, Notifications, and the dedicated Operations Menu Button */}
+            {/* Action Area: Realtime Clock, Quick Alert & Universal Menu Button */}
             <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
               {/* Live Ticking Real-Time SOC Clock */}
               <RealtimeClock variant="navbar" />
-
-              {/* Theme Selector */}
-              <ThemeSelector />
 
               {/* Quick Alert Trigger Button */}
               <QuickAlertModal
@@ -195,19 +201,21 @@ function RootComponent() {
                 }
               />
 
-              {/* Notification Center Popover */}
-              <NotificationCenter />
-
-              {/* Universal Operations Hamburger Menu Button (The single primary navigation control on navbar) */}
+              {/* Universal Operations Hamburger Menu Button (Housing Themes, Notifications, & Operations Hubs) */}
               <button
                 type="button"
                 onClick={() => setCommandDrawerOpen(true)}
                 aria-label="Open Operations Menu"
                 title="Open Operations Command Menu"
-                className="flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-md border border-primary/40 bg-primary/10 text-foreground hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary shadow-xs shrink-0 group"
+                className="relative flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-md border border-primary/40 bg-primary/10 text-foreground hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary shadow-xs shrink-0 group"
               >
                 <Menu className="size-4 shrink-0 text-primary group-hover:text-primary-foreground" />
                 <span className="font-mono text-xs font-semibold">Menu</span>
+                {unreadCount > 0 ? (
+                  <span className="flex size-4 items-center justify-center rounded-full bg-primary text-[0.62rem] font-bold text-primary-foreground font-mono ml-0.5 animate-pulse">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                ) : null}
               </button>
             </div>
           </div>
