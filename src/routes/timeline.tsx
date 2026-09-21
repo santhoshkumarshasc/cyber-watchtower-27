@@ -201,8 +201,8 @@ function TimelinePage() {
           </div>
 
           {/* Time Window Brackets */}
-          <div className="flex items-center gap-1">
-            <span className="text-xs text-muted-foreground mr-1 hidden sm:inline label-mono">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-semibold text-muted-foreground mr-1 hidden sm:inline">
               Window:
             </span>
             {(
@@ -217,10 +217,10 @@ function TimelinePage() {
                 key={w.id}
                 type="button"
                 onClick={() => setTimeFilter(w.id)}
-                className={`rounded px-2.5 py-1 text-xs font-mono transition-colors cursor-pointer ${
+                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
                   timeFilter === w.id
-                    ? "bg-secondary text-primary font-bold border border-primary/30"
-                    : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground border border-transparent"
+                    ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
+                    : "border border-border bg-card text-muted-foreground hover:bg-secondary hover:text-foreground"
                 }`}
               >
                 {w.label}
@@ -241,19 +241,19 @@ function TimelinePage() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {(["all", ...severityLevels] as const).map((lvl) => (
               <button
                 key={lvl}
                 type="button"
                 onClick={() => setSelectedSeverity(lvl)}
-                className={`rounded border px-2.5 py-1.5 font-mono text-xs uppercase transition-colors cursor-pointer ${
+                className={`rounded-md border px-3 py-1.5 text-xs font-semibold capitalize transition-colors cursor-pointer ${
                   selectedSeverity === lvl
-                    ? "border-primary/60 bg-primary/20 text-primary font-semibold"
-                    : "border-border text-muted-foreground hover:bg-secondary"
+                    ? "border-primary bg-primary text-primary-foreground shadow-2xs"
+                    : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                {lvl}
+                {lvl === "all" ? "All Severities" : lvl}
               </button>
             ))}
           </div>

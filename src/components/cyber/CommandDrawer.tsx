@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   ShieldAlert,
@@ -18,12 +18,15 @@ import {
   ExternalLink,
   Palette,
   Bell,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { RealtimeClock } from "./RealtimeClock";
 import { ThemeSelector } from "./ThemeSelector";
 import { DrawerNotificationSection } from "./DrawerNotificationSection";
 import { QuickAlertModal } from "./QuickAlertModal";
 import { useQueryClient } from "@tanstack/react-query";
+import { isCurrentThemeDark, toggleLightDark } from "@/lib/theme";
 import { toast } from "sonner";
 
 interface CommandDrawerProps {
@@ -35,6 +38,28 @@ export function CommandDrawer({ isOpen, onClose }: CommandDrawerProps) {
   const router = useRouterState();
   const queryClient = useQueryClient();
   const currentPath = router.location.pathname;
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsDark(isCurrentThemeDark());
+    const onThemeChange = () => setIsDark(isCurrentThemeDark());
+    window.addEventListener("cyberguard:theme-changed", onThemeChange);
+    return () => window.removeEventListener("cyberguard:theme-changed", onThemeChange);
+  }, []);
+
+  const handleToggleTheme = () => {
+    const next = toggleLightDark();
+    setIsDark(
+      next === "modern-dark" ||
+        next === "cyber-crimson" ||
+        next === "matrix-emerald" ||
+        next === "midnight-cyan" ||
+        next === "amber-sentinel",
+    );
+    toast.success(
+      `Switched to ${next === "modern-light" ? "White & Black (Light)" : "Black & White (Dark)"} mode`,
+    );
+  };
 
   // Dismiss on Escape key
   useEffect(() => {
@@ -146,15 +171,15 @@ export function CommandDrawer({ isOpen, onClose }: CommandDrawerProps) {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-display text-sm font-bold tracking-wide">
-                  OPERATIONS MENU
+                  NAVIGATION &amp; OPERATIONS
                 </span>
                 <span className="flex items-center gap-1 rounded bg-primary/20 px-1.5 py-0.2 font-mono text-[0.62rem] text-primary">
                   <span className="inline-block size-1.5 rounded-full bg-primary animate-pulse" />
                   ONLINE
                 </span>
               </div>
-              <p className="text-[0.68rem] text-muted-foreground font-mono">
-                Full-View Operations &amp; Fast Dispatch
+              <p className="text-[0.68rem] text-muted-foreground">
+                Threat intelligence desks, analytics, timeline &amp; tools
               </p>
             </div>
           </div>
@@ -176,20 +201,51 @@ export function CommandDrawer({ isOpen, onClose }: CommandDrawerProps) {
 
         {/* Live Clock Telemetry Banner */}
         <div className="border-b border-border/80 bg-secondary/30 px-4 py-2.5 sm:px-6">
-          <div className="flex items-center justify-between">
-            <span className="label-mono text-[0.68rem] flex items-center gap-1.5 text-primary">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[0.68rem] font-semibold flex items-center gap-1.5 text-primary uppercase tracking-wider">
               <Clock className="size-3" />
-              SOC PRECISION TIME
+              Live Precision Time
             </span>
-            <span className="label-mono text-[0.65rem] text-muted-foreground">Cadence: 60s</span>
+            <span className="text-[0.68rem] font-medium text-muted-foreground">Sync: 60s live</span>
           </div>
-          <div className="mt-1.5">
-            <RealtimeClock variant="full" />
-          </div>
+          <RealtimeClock variant="drawer" />
         </div>
 
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+          {/* Mobile Display Mode: 1-Click White (Light) & Black (Dark) Toggle */}
+          <div className="flex items-center justify-between rounded-lg border border-border bg-card p-3 shadow-2xs">
+            <div className="flex items-center gap-2.5">
+              <div className="flex size-7 items-center justify-center rounded-md bg-secondary text-foreground">
+                {isDark ? (
+                  <Moon className="size-4 text-primary" />
+                ) : (
+                  <Sun className="size-4 text-amber-500" />
+                )}
+              </div>
+              <div>
+                <div className="text-xs font-bold text-foreground">
+                  {isDark ? "Dark Mode (Black)" : "Light Mode (White)"}
+                </div>
+                <div className="text-[0.68rem] text-muted-foreground">
+                  Default White &amp; Black Palette
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleToggleTheme}
+              className="flex items-center gap-1.5 rounded-md border border-border bg-secondary hover:bg-secondary/80 px-3 py-1.5 text-xs font-semibold text-foreground transition-colors cursor-pointer"
+            >
+              {isDark ? (
+                <Sun className="size-3.5 text-amber-500" />
+              ) : (
+                <Moon className="size-3.5 text-foreground" />
+              )}
+              <span>{isDark ? "Switch to White" : "Switch to Black"}</span>
+            </button>
+          </div>
+
           {/* Quick Operator Actions */}
           <div className="grid grid-cols-2 gap-2">
             <QuickAlertModal
@@ -216,8 +272,8 @@ export function CommandDrawer({ isOpen, onClose }: CommandDrawerProps) {
 
           {/* Primary Operational Hub Navigation */}
           <div>
-            <span className="label-mono text-xs text-muted-foreground block mb-2.5">
-              OPERATIONAL CENTERS
+            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider block mb-2.5">
+              Navigation Centers
             </span>
             <div className="space-y-1.5">
               {navLinks.map((item) => {
@@ -268,10 +324,10 @@ export function CommandDrawer({ isOpen, onClose }: CommandDrawerProps) {
           {/* Threat Category Fast Jumps */}
           <div>
             <div className="flex items-center justify-between mb-2.5">
-              <span className="label-mono text-xs text-muted-foreground">
-                INCIDENT CLASSIFICATIONS
+              <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                Threat Classifications
               </span>
-              <span className="label-mono text-[0.65rem] text-muted-foreground">Distribution</span>
+              <span className="text-[0.68rem] font-medium text-muted-foreground">Distribution</span>
             </div>
             <div className="grid grid-cols-1 gap-1.5">
               {threatCategories.map((cat) => (
@@ -280,10 +336,10 @@ export function CommandDrawer({ isOpen, onClose }: CommandDrawerProps) {
                   to="/"
                   search={{ category: cat.filter }}
                   onClick={onClose}
-                  className="flex items-center justify-between rounded-md border border-border/40 bg-secondary/15 px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary/50 hover:border-primary/40 transition-colors cursor-pointer"
+                  className="flex items-center justify-between rounded-md border border-border/70 bg-card px-3 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-secondary hover:border-primary/40 transition-colors cursor-pointer"
                 >
-                  <span className="font-medium">{cat.name}</span>
-                  <span className="font-mono text-[0.68rem] text-primary">{cat.count}</span>
+                  <span className="font-medium text-foreground">{cat.name}</span>
+                  <span className="text-[0.68rem] font-bold text-primary">{cat.count}</span>
                 </Link>
               ))}
             </div>
@@ -293,17 +349,17 @@ export function CommandDrawer({ isOpen, onClose }: CommandDrawerProps) {
           <DrawerNotificationSection />
 
           {/* Visual Theme Selector Section inside Menu */}
-          <div className="rounded-lg border border-border/70 bg-secondary/20 p-3.5 space-y-3">
+          <div className="rounded-lg border border-border bg-card p-3.5 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="label-mono text-xs text-foreground font-semibold flex items-center gap-1.5">
+              <span className="text-xs font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider">
                 <Palette className="size-3.5 text-primary" />
-                SOC DISPLAY THEME
+                Color Theme
               </span>
-              <span className="font-mono text-[0.65rem] text-primary">5 SCHEMES</span>
+              <span className="text-[0.68rem] font-semibold text-primary">6 Themes</span>
             </div>
-            <p className="text-[0.7rem] text-muted-foreground leading-relaxed">
-              Switch operational visual ambiance across Crimson SOC, Matrix Terminal, Deep Radar,
-              Amber Alert, or White Hat.
+            <p className="text-[0.72rem] text-muted-foreground leading-relaxed">
+              Switch visual ambiance between Light, Dark, Cyber Crimson, Matrix Emerald, Midnight
+              Cyan, or Amber Sentinel.
             </p>
             <ThemeSelector variant="inline" />
           </div>

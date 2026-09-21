@@ -3,7 +3,7 @@ import { Clock, Globe, Laptop, Calendar, CheckCircle2, Shield } from "lucide-rea
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export interface RealtimeClockProps {
-  variant?: "navbar" | "banner" | "compact" | "badge" | "hero-bar";
+  variant?: "navbar" | "banner" | "compact" | "badge" | "hero-bar" | "drawer";
   className?: string;
   showTimezone?: boolean;
 }
@@ -63,6 +63,46 @@ export function RealtimeClock({
     setCopiedFormat(label);
     setTimeout(() => setCopiedFormat(null), 2000);
   };
+
+  // DRAWER VARIANT: Compact layout for slide-over menu
+  if (variant === "drawer") {
+    return (
+      <div
+        className={`rounded-lg border border-border/70 bg-card p-3 shadow-2xs space-y-2.5 ${className}`}
+      >
+        <div className="flex items-center justify-between text-xs border-b border-border/50 pb-2">
+          <div className="flex items-center gap-1.5 font-semibold text-foreground">
+            <Calendar className="size-3.5 text-primary" />
+            <span>{todayShortDate}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setUse24Hour(!use24Hour)}
+            className="rounded bg-secondary px-1.5 py-0.5 text-[0.68rem] font-medium text-foreground hover:bg-secondary/80 transition-colors cursor-pointer"
+          >
+            {use24Hour ? "24H" : "12H"}
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="rounded bg-secondary/40 border border-border/50 p-2">
+            <div className="text-[0.68rem] text-muted-foreground flex items-center gap-1">
+              <Globe className="size-3 text-primary" />
+              UTC
+            </div>
+            <div className="font-bold text-foreground mt-0.5">{utcTimeStr}</div>
+          </div>
+          <div className="rounded bg-secondary/40 border border-border/50 p-2">
+            <div className="text-[0.68rem] text-muted-foreground flex items-center gap-1">
+              <Laptop className="size-3 text-muted-foreground" />
+              Local ({timezoneName})
+            </div>
+            <div className="font-bold text-foreground mt-0.5">{localTimeStr}</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // HERO-BAR VARIANT: Clean, prominent today's date & live cyber status
   if (variant === "hero-bar") {

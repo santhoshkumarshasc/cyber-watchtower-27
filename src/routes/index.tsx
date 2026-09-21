@@ -351,9 +351,9 @@ function FeedPage() {
         </div>
 
         {/* Secondary Filter Bar: Search, Category, Sorting, Recency Windows */}
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5">
           {/* Search Input */}
-          <div className="relative min-w-[14rem] flex-1">
+          <div className="relative w-full sm:w-auto sm:min-w-[14rem] flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
               value={search}
@@ -372,70 +372,72 @@ function FeedPage() {
             )}
           </div>
 
-          {/* Recency Time Filter Window */}
-          <div className="flex items-center rounded-md border border-border bg-card p-0.5 text-xs">
-            <span className="text-muted-foreground px-2 hidden sm:inline label-mono text-[0.68rem]">
-              Recency:
-            </span>
-            {(
-              [
-                { id: "all", label: "All" },
-                { id: "30m", label: "< 30m" },
-                { id: "2h", label: "< 2h" },
-                { id: "24h", label: "< 24h" },
-              ] as const
-            ).map((win) => (
-              <button
-                key={win.id}
-                type="button"
-                onClick={() => setRecencyWindow(win.id)}
-                className={`px-2 py-1 rounded text-[0.72rem] font-mono transition-colors cursor-pointer ${
-                  recencyWindow === win.id
-                    ? "bg-primary text-primary-foreground font-semibold"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {win.label}
-              </button>
-            ))}
-          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Recency Time Filter Window */}
+            <div className="flex items-center rounded-md border border-border bg-card p-0.5 text-xs">
+              <span className="text-muted-foreground px-2 hidden sm:inline label-mono text-[0.68rem]">
+                Recency:
+              </span>
+              {(
+                [
+                  { id: "all", label: "All" },
+                  { id: "30m", label: "< 30m" },
+                  { id: "2h", label: "< 2h" },
+                  { id: "24h", label: "< 24h" },
+                ] as const
+              ).map((win) => (
+                <button
+                  key={win.id}
+                  type="button"
+                  onClick={() => setRecencyWindow(win.id)}
+                  className={`px-2 py-1 rounded text-[0.72rem] font-mono transition-colors cursor-pointer ${
+                    recencyWindow === win.id
+                      ? "bg-primary text-primary-foreground font-semibold"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {win.label}
+                </button>
+              ))}
+            </div>
 
-          {/* Category Dropdown */}
-          {categories.length > 0 && (
+            {/* Category Dropdown */}
+            {categories.length > 0 && (
+              <div className="relative">
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="rounded-md border border-input bg-card px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-8 max-w-[11rem] sm:max-w-none truncate"
+                >
+                  <option value="all">All Categories</option>
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Sort Dropdown */}
             <div className="relative">
               <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="rounded-md border border-input bg-card px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-8"
+                value={sortBy}
+                onChange={(e) =>
+                  setSortBy(
+                    e.target.value as
+                      "recent-to-past" | "past-to-recent" | "risk-desc" | "risk-asc" | "affected",
+                  )
+                }
+                className="rounded-md border border-input bg-card px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-8 font-medium max-w-[14rem] sm:max-w-none truncate"
               >
-                <option value="all">All Categories</option>
-                {categories.map((cat) => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                ))}
+                <option value="recent-to-past">Sort: Recent to Past (Newest First)</option>
+                <option value="past-to-recent">Sort: Past to Recent (Oldest First)</option>
+                <option value="risk-desc">Sort: Highest Risk (Critical First)</option>
+                <option value="risk-asc">Sort: Lowest Risk</option>
+                <option value="affected">Sort: Affected Scope</option>
               </select>
             </div>
-          )}
-
-          {/* Sort Dropdown */}
-          <div className="relative">
-            <select
-              value={sortBy}
-              onChange={(e) =>
-                setSortBy(
-                  e.target.value as
-                    "recent-to-past" | "past-to-recent" | "risk-desc" | "risk-asc" | "affected",
-                )
-              }
-              className="rounded-md border border-input bg-card px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-8 font-medium"
-            >
-              <option value="recent-to-past">Sort: Recent to Past (Newest First)</option>
-              <option value="past-to-recent">Sort: Past to Recent (Oldest First)</option>
-              <option value="risk-desc">Sort: Highest Risk (Critical First)</option>
-              <option value="risk-asc">Sort: Lowest Risk</option>
-              <option value="affected">Sort: Affected Scope</option>
-            </select>
           </div>
 
           {/* View Mode Toggle (Grid vs Compact List) */}

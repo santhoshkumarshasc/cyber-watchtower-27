@@ -206,68 +206,31 @@ function RootComponent() {
                   </span>
                 </div>
               </Link>
-
-              {/* Standard Website Navigation Links */}
-              <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-muted-foreground">
-                <Link
-                  to="/"
-                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
-                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
-                >
-                  Live Alerts
-                </Link>
-                <Link
-                  to="/timeline"
-                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
-                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
-                >
-                  Timeline
-                </Link>
-                <Link
-                  to="/hunting"
-                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
-                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
-                >
-                  Threat Hunting
-                </Link>
-                <Link
-                  to="/dashboard"
-                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
-                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
-                >
-                  Analytics
-                </Link>
-                <Link
-                  to="/about"
-                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
-                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
-                >
-                  About Feeds
-                </Link>
-              </nav>
             </div>
 
-            {/* Right Action Bar: Real-time Today's Date & Clock, Light/Dark Toggle, Quick Alert & Menu */}
+            {/* Right Action Bar: On mobile view, ONLY the Menu button is shown. All other options are placed inside the Menu drawer */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-              {/* Real-Time Today's Date & Clock Display */}
-              <RealtimeClock variant="navbar" />
+              {/* Real-Time Today's Date & Clock Display (Hidden on mobile; full clock is inside Menu) */}
+              <div className="hidden md:flex">
+                <RealtimeClock variant="navbar" />
+              </div>
 
-              {/* 1-Click Light / Dark Mode Toggle (Standard Website UX) */}
+              {/* 1-Click Light / Dark Mode Toggle (Hidden on mobile; instant toggle is inside Menu) */}
               <button
                 type="button"
                 onClick={handleToggleTheme}
-                className="flex size-8 sm:size-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
-                title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                className="hidden sm:flex size-8 sm:size-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                title={isDark ? "Switch to Light (White) Mode" : "Switch to Dark (Black) Mode"}
                 aria-label="Toggle Light and Dark Mode"
               >
                 {isDark ? (
                   <Sun className="size-4 text-amber-500" />
                 ) : (
-                  <Moon className="size-4 text-slate-700" />
+                  <Moon className="size-4 text-foreground" />
                 )}
               </button>
 
-              {/* Quick Threat Alert Modal Button */}
+              {/* Quick Threat Alert Modal Button (Hidden on mobile; quick broadcast is inside Menu) */}
               <QuickAlertModal
                 triggerButton={
                   <button
@@ -281,16 +244,16 @@ function RootComponent() {
                 }
               />
 
-              {/* Operations Menu Button */}
+              {/* Navigation Menu Button - ONLY element visible in header on mobile view */}
               <button
                 type="button"
                 onClick={() => setCommandDrawerOpen(true)}
-                aria-label="Open Operations Menu"
-                title="Open Settings & Operations Menu"
-                className="relative flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-md border border-border bg-secondary/80 text-foreground hover:bg-secondary transition-all cursor-pointer shadow-xs shrink-0"
+                aria-label="Open Navigation Menu"
+                title="Open Navigation Menu"
+                className="relative flex items-center gap-2 h-9 px-3.5 rounded-md border border-border bg-card text-foreground hover:bg-secondary hover:border-primary/40 transition-all cursor-pointer shadow-xs shrink-0"
               >
-                <Menu className="size-4 shrink-0 text-muted-foreground" />
-                <span className="text-xs font-semibold hidden sm:inline">Menu</span>
+                <Menu className="size-4 shrink-0 text-primary" />
+                <span className="text-xs font-bold tracking-tight">Menu</span>
                 {unreadCount > 0 ? (
                   <span className="flex size-4 items-center justify-center rounded-full bg-primary text-[0.62rem] font-bold text-primary-foreground">
                     {unreadCount > 9 ? "9+" : unreadCount}

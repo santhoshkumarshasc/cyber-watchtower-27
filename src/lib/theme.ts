@@ -19,19 +19,19 @@ export interface ThemeOption {
 export const THEME_OPTIONS: ThemeOption[] = [
   {
     id: "modern-light",
-    name: "Clean Light",
+    name: "White & Black (Default)",
     category: "light",
-    description: "Crisp, accessible modern light theme with cobalt blue accents",
+    description: "Crisp, minimalist high-contrast white and black theme",
     swatchColor: "#ffffff",
-    accentColor: "#2563eb",
+    accentColor: "#09090b",
   },
   {
     id: "modern-dark",
-    name: "Modern Slate (Dark)",
+    name: "Black & White (Dark)",
     category: "dark",
-    description: "High-contrast clean dark slate with indigo highlights",
-    swatchColor: "#0f172a",
-    accentColor: "#3b82f6",
+    description: "Deep obsidian black with high-contrast white text",
+    swatchColor: "#09090b",
+    accentColor: "#fafafa",
   },
   {
     id: "cyber-crimson",
