@@ -7,17 +7,15 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { Radar, ShieldCheck, Menu, Zap } from "lucide-react";
+import { Radar, ShieldCheck, Menu, Zap, Sun, Moon } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { QuickAlertModal } from "../components/cyber/QuickAlertModal";
-import { CyberPreloader } from "../components/cyber/CyberPreloader";
-import { CyberChatbot } from "../components/cyber/CyberChatbot";
 import { RealtimeClock } from "../components/cyber/RealtimeClock";
 import { CommandDrawer } from "../components/cyber/CommandDrawer";
 import { ScrollToTop } from "../components/cyber/ScrollToTop";
-import { getStoredTheme, applyTheme } from "../lib/theme";
+import { getStoredTheme, applyTheme, toggleLightDark, isCurrentThemeDark } from "../lib/theme";
 import { getUnreadAlertCount } from "../lib/notification-manager";
 import { Toaster } from "../components/ui/sonner";
 
@@ -133,86 +131,168 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [commandDrawerOpen, setCommandDrawerOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    const theme = getStoredTheme();
+    return (
+      theme === "modern-dark" ||
+      theme === "cyber-crimson" ||
+      theme === "matrix-emerald" ||
+      theme === "midnight-cyan" ||
+      theme === "amber-sentinel"
+    );
+  });
 
   useEffect(() => {
-    applyTheme(getStoredTheme());
+    const currentTheme = getStoredTheme();
+    applyTheme(currentTheme);
+    setIsDark(
+      currentTheme === "modern-dark" ||
+        currentTheme === "cyber-crimson" ||
+        currentTheme === "matrix-emerald" ||
+        currentTheme === "midnight-cyan" ||
+        currentTheme === "amber-sentinel",
+    );
     setUnreadCount(getUnreadAlertCount());
 
     const handleAlertsUpdated = () => {
       setUnreadCount(getUnreadAlertCount());
     };
+    const handleThemeChanged = (e: CustomEvent) => {
+      const themeId = e.detail;
+      setIsDark(
+        themeId === "modern-dark" ||
+          themeId === "cyber-crimson" ||
+          themeId === "matrix-emerald" ||
+          themeId === "midnight-cyan" ||
+          themeId === "amber-sentinel",
+      );
+    };
+
     window.addEventListener("cyberguard:alerts-updated", handleAlertsUpdated);
+    window.addEventListener("cyberguard:theme-changed", handleThemeChanged as EventListener);
     return () => {
       window.removeEventListener("cyberguard:alerts-updated", handleAlertsUpdated);
+      window.removeEventListener("cyberguard:theme-changed", handleThemeChanged as EventListener);
     };
   }, []);
+
+  const handleToggleTheme = () => {
+    const nextTheme = toggleLightDark();
+    setIsDark(nextTheme === "modern-dark");
+  };
 
   return (
     <QueryClientProvider client={queryClient}>
       <div className="flex min-h-screen flex-col bg-background text-foreground">
-        {/* Telemetry Boot Preloader */}
-        <CyberPreloader />
-
-        {/* Clean, Unified Top Navbar with Verified Indicator and Universal Menu Button */}
-        <header className="sticky top-0 z-40 border-b border-border bg-background/92 backdrop-blur-md">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3 px-3.5 py-2.5 sm:px-6 sm:py-3">
-            {/* Brand & Verified Desk Status */}
-            <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+        {/* Clean, Modern Website Header */}
+        <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3.5 py-2.5 sm:px-6 sm:py-3">
+            {/* Brand Logo & Normal Website Navigation */}
+            <div className="flex items-center gap-6 shrink-0">
               <Link
                 to="/"
-                className="flex items-center gap-2 focus:outline-none focus:ring-1 focus:ring-primary rounded shrink-0"
+                className="flex items-center gap-2.5 focus:outline-none rounded shrink-0 group"
               >
-                <span className="flex size-8 sm:size-9 items-center justify-center rounded-md border border-primary/40 bg-primary/15 text-primary shadow-xs">
-                  <ShieldCheck className="size-4.5 sm:size-5" />
+                <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-xs group-hover:scale-105 transition-transform">
+                  <ShieldCheck className="size-5" />
                 </span>
                 <div className="flex flex-col">
-                  <span className="font-display text-base sm:text-lg font-bold tracking-tight leading-none">
+                  <span className="text-lg font-bold tracking-tight text-foreground leading-tight">
                     Cyber<span className="text-primary">Guard</span>
                   </span>
-                  <span className="font-mono text-[0.62rem] text-muted-foreground tracking-wider">
-                    DEFENSE DESK
+                  <span className="text-[0.68rem] font-medium text-muted-foreground tracking-normal">
+                    Verified Threat Intelligence
                   </span>
                 </div>
               </Link>
 
-              {/* Verified Intelligence Only Badge */}
-              <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 sm:px-2.5 py-0.5 text-[0.68rem] font-mono text-emerald-400">
-                <span className="size-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>VERIFIED INTEL ONLY</span>
-              </span>
+              {/* Standard Website Navigation Links */}
+              <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-muted-foreground">
+                <Link
+                  to="/"
+                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
+                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
+                >
+                  Live Alerts
+                </Link>
+                <Link
+                  to="/timeline"
+                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
+                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
+                >
+                  Timeline
+                </Link>
+                <Link
+                  to="/hunting"
+                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
+                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
+                >
+                  Threat Hunting
+                </Link>
+                <Link
+                  to="/dashboard"
+                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
+                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
+                >
+                  Analytics
+                </Link>
+                <Link
+                  to="/about"
+                  className="px-3 py-1.5 rounded-md hover:text-foreground hover:bg-secondary transition-colors"
+                  activeProps={{ className: "text-foreground font-semibold bg-secondary/80" }}
+                >
+                  About Feeds
+                </Link>
+              </nav>
             </div>
 
-            {/* Action Area: Realtime Clock, Quick Alert & Universal Menu Button */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-              {/* Live Ticking Real-Time SOC Clock */}
+            {/* Right Action Bar: Real-time Today's Date & Clock, Light/Dark Toggle, Quick Alert & Menu */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              {/* Real-Time Today's Date & Clock Display */}
               <RealtimeClock variant="navbar" />
 
-              {/* Quick Alert Trigger Button */}
+              {/* 1-Click Light / Dark Mode Toggle (Standard Website UX) */}
+              <button
+                type="button"
+                onClick={handleToggleTheme}
+                className="flex size-8 sm:size-9 items-center justify-center rounded-md border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
+                title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                aria-label="Toggle Light and Dark Mode"
+              >
+                {isDark ? (
+                  <Sun className="size-4 text-amber-500" />
+                ) : (
+                  <Moon className="size-4 text-slate-700" />
+                )}
+              </button>
+
+              {/* Quick Threat Alert Modal Button */}
               <QuickAlertModal
                 triggerButton={
                   <button
                     type="button"
-                    className="hidden sm:inline-flex items-center gap-1 sm:gap-1.5 rounded-md bg-destructive/90 px-2 sm:px-2.5 py-1.5 text-xs font-semibold text-destructive-foreground hover:bg-destructive shadow-xs transition-colors cursor-pointer shrink-0"
-                    title="Dispatch Quick Threat Alert"
+                    className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-destructive text-destructive-foreground px-2.5 py-1.5 text-xs font-semibold hover:bg-destructive/90 transition-colors shadow-xs cursor-pointer shrink-0"
+                    title="Dispatch Quick Operator Alert"
                   >
-                    <Zap className="size-3.5 shrink-0" />
+                    <Zap className="size-3.5" />
                     <span>Quick Alert</span>
                   </button>
                 }
               />
 
-              {/* Universal Operations Hamburger Menu Button (Housing Themes, Notifications, & Operations Hubs) */}
+              {/* Operations Menu Button */}
               <button
                 type="button"
                 onClick={() => setCommandDrawerOpen(true)}
                 aria-label="Open Operations Menu"
-                title="Open Operations Command Menu"
-                className="relative flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-md border border-primary/40 bg-primary/10 text-foreground hover:bg-primary hover:text-primary-foreground transition-all cursor-pointer focus:outline-none focus:ring-1 focus:ring-primary shadow-xs shrink-0 group"
+                title="Open Settings & Operations Menu"
+                className="relative flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-md border border-border bg-secondary/80 text-foreground hover:bg-secondary transition-all cursor-pointer shadow-xs shrink-0"
               >
-                <Menu className="size-4 shrink-0 text-primary group-hover:text-primary-foreground" />
-                <span className="font-mono text-xs font-semibold">Menu</span>
+                <Menu className="size-4 shrink-0 text-muted-foreground" />
+                <span className="text-xs font-semibold hidden sm:inline">Menu</span>
                 {unreadCount > 0 ? (
-                  <span className="flex size-4 items-center justify-center rounded-full bg-primary text-[0.62rem] font-bold text-primary-foreground font-mono ml-0.5 animate-pulse">
+                  <span className="flex size-4 items-center justify-center rounded-full bg-primary text-[0.62rem] font-bold text-primary-foreground">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 ) : null}
@@ -225,9 +305,6 @@ function RootComponent() {
         <main className="mx-auto w-full max-w-7xl flex-1 px-3.5 py-5 sm:px-6 md:py-8">
           <Outlet />
         </main>
-
-        {/* Interactive SOC Chatbot */}
-        <CyberChatbot />
 
         {/* Footer */}
         <footer className="border-t border-border py-6">

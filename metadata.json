@@ -1,6 +1,6 @@
 {
   "name": "CyberGuard",
-  "description": "Real-time cybersecurity operations desk with AI-powered SOC chatbot, 5 tactical display themes, telemetry boot preloader, recent-to-past chronological threat tracking, instant operator alerts, threat hunting workbench, and platform documentation.",
+  "description": "Fast and streamlined real-time cybersecurity operations desk with verified threat feeds, chronological recent-to-past tracking, risk analytics, and instant operator alerts.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

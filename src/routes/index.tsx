@@ -5,25 +5,17 @@ import {
   RefreshCw,
   Search,
   X,
-  SlidersHorizontal,
   ExternalLink,
   ShieldAlert,
   ShieldCheck,
   LayoutGrid,
   List,
   ChevronDown,
-  ArrowUpDown,
-  ArrowDownUp,
   Radio,
   Clock,
   Zap,
-  Scale,
   FileDown,
-  Crosshair,
-  Sparkles,
   Trash2,
-  Info,
-  Bot,
 } from "lucide-react";
 
 import { ErrorPanel, LoadingPanel } from "@/components/cyber/States";
@@ -32,9 +24,9 @@ import { RiskMeter } from "@/components/cyber/RiskMeter";
 import { ThreatDetailModal } from "@/components/cyber/ThreatDetailModal";
 import { ThreatComparisonModal } from "@/components/cyber/ThreatComparisonModal";
 import { QuickAlertModal } from "@/components/cyber/QuickAlertModal";
+import { RealtimeClock } from "@/components/cyber/RealtimeClock";
 import { NewsTicker } from "@/components/cyber/NewsTicker";
 import { AutoRefreshControl } from "@/components/cyber/AutoRefreshControl";
-import { RealtimeClock } from "@/components/cyber/RealtimeClock";
 import { briefingQueryOptions } from "@/lib/threat-queries";
 import { severityLevels, severityStyles, type Threat } from "@/lib/threat-types";
 import {
@@ -154,43 +146,46 @@ function FeedPage() {
 
   return (
     <div className="space-y-6">
+      {/* Real-time Today's Date & Live Monitoring Status Bar */}
+      <RealtimeClock variant="hero-bar" />
+
       {/* Hero Threat Level Briefing Banner */}
-      <section className="panel relative overflow-hidden p-5 shadow-alert sm:p-6 md:p-8">
+      <section className="rounded-lg border border-border bg-card p-5 sm:p-6 md:p-8 shadow-xs">
         <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <span className="label-mono text-primary flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
                 <Radio className="size-3.5 animate-pulse text-primary" />
                 Global Situational Briefing
               </span>
-              <span className="rounded bg-secondary px-2 py-0.5 font-mono text-[0.68rem] text-muted-foreground">
-                CISA &middot; NVD &middot; CERT Feeds
+              <span className="rounded bg-secondary px-2 py-0.5 text-xs font-medium text-muted-foreground">
+                CISA &middot; NVD &middot; CERT Verified Feeds
               </span>
-              <span className="rounded border border-primary/30 bg-primary/10 px-2 py-0.5 font-mono text-[0.68rem] text-primary">
-                View: Recent to Past Order
+              <span className="rounded bg-primary/10 border border-primary/20 px-2 py-0.5 text-xs font-medium text-primary">
+                Recent to Past Order
               </span>
             </div>
 
             <h1 className="mt-3 text-2xl font-bold leading-tight sm:text-3xl md:text-4xl text-foreground">
-              {data ? data.headline : "Real-time cyber threat intelligence desk"}
+              {data ? data.headline : "Real-time cybersecurity threat intelligence desk"}
             </h1>
 
             <p className="mt-2.5 max-w-2xl text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              CyberGuard compiles active exploits, zero-days, ransomware intrusions and supply chain
-              compromises from global cyber response desks with verified sources, chronological
-              order, and immediate mitigations.
+              Active exploits, zero-day vulnerabilities, ransomware intrusions, and supply chain
+              compromises compiled from global security response desks with verified sources,
+              chronological order, and recommended mitigations.
             </p>
 
             {data ? (
-              <div className="mt-5 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-6 border-t border-border/60 pt-4">
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:gap-6 border-t border-border pt-4">
                 <Stat
-                  label="Active incidents"
+                  label="Active Incidents"
                   value={String(allThreats.length || data.activeIncidents)}
                 />
-                <Stat label="People affected" value={data.peopleAffectedLabel} />
-                <Stat label="Trend" value={data.riskTrend} />
+                <Stat label="Accounts Monitored" value={data.peopleAffectedLabel} />
+                <Stat label="Risk Trend (24h)" value={data.riskTrend} />
                 <Stat
-                  label="Ordering"
+                  label="Feed Ordering"
                   value={sortBy === "recent-to-past" ? "Recent → Past" : "Custom Order"}
                 />
               </div>
@@ -207,7 +202,7 @@ function FeedPage() {
               />
               <Link
                 to="/timeline"
-                className="inline-flex items-center gap-1 rounded-md border border-border bg-secondary/80 px-2.5 py-1 text-xs font-mono text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                className="inline-flex items-center gap-1 rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80 transition-colors"
               >
                 <Clock className="size-3 text-primary" />
                 <span>Full Timeline</span>
@@ -215,78 +210,6 @@ function FeedPage() {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Real-Time SOC Telemetry & Precision Clock HUD */}
-      <section>
-        <RealtimeClock variant="banner" />
-      </section>
-
-      {/* Quick Operations Hubs */}
-      <section className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-xs">
-        <Link
-          to="/timeline"
-          className="panel p-3 flex items-center gap-2.5 hover:border-primary/50 transition-colors group cursor-pointer"
-        >
-          <span className="flex size-7 items-center justify-center rounded bg-primary/15 text-primary group-hover:scale-105 transition-transform shrink-0">
-            <Clock className="size-4" />
-          </span>
-          <div className="min-w-0">
-            <div className="font-semibold text-foreground text-[0.78rem] truncate">
-              Incident Timeline
-            </div>
-            <div className="text-[0.66rem] text-muted-foreground truncate">Chronological queue</div>
-          </div>
-        </Link>
-
-        <Link
-          to="/hunting"
-          className="panel p-3 flex items-center gap-2.5 hover:border-primary/50 transition-colors group cursor-pointer"
-        >
-          <span className="flex size-7 items-center justify-center rounded bg-primary/15 text-primary group-hover:scale-105 transition-transform shrink-0">
-            <Crosshair className="size-4" />
-          </span>
-          <div className="min-w-0">
-            <div className="font-semibold text-foreground text-[0.78rem] truncate">
-              Threat Hunting
-            </div>
-            <div className="text-[0.66rem] text-muted-foreground truncate">ATT&CK & IOC search</div>
-          </div>
-        </Link>
-
-        <Link
-          to="/dashboard"
-          className="panel p-3 flex items-center gap-2.5 hover:border-primary/50 transition-colors group cursor-pointer"
-        >
-          <span className="flex size-7 items-center justify-center rounded bg-primary/15 text-primary group-hover:scale-105 transition-transform shrink-0">
-            <Scale className="size-4" />
-          </span>
-          <div className="min-w-0">
-            <div className="font-semibold text-foreground text-[0.78rem] truncate">
-              Risk Analytics
-            </div>
-            <div className="text-[0.66rem] text-muted-foreground truncate">
-              Global attack metrics
-            </div>
-          </div>
-        </Link>
-
-        <Link
-          to="/about"
-          className="panel p-3 flex items-center gap-2.5 hover:border-primary/50 transition-colors group cursor-pointer"
-        >
-          <span className="flex size-7 items-center justify-center rounded bg-primary/15 text-primary group-hover:scale-105 transition-transform shrink-0">
-            <Info className="size-4" />
-          </span>
-          <div className="min-w-0">
-            <div className="font-semibold text-foreground text-[0.78rem] truncate">
-              About Platform
-            </div>
-            <div className="text-[0.66rem] text-muted-foreground truncate">
-              Feeds & defense SLAs
-            </div>
-          </div>
-        </Link>
       </section>
 
       {/* Operator Dispatched Quick Alerts Banner (if any) */}
@@ -342,20 +265,20 @@ function FeedPage() {
       {/* Primary Toolbar: Search, Filters, Auto Refresh, Recency Order */}
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          {/* Severity Badges */}
-          <div className="flex flex-wrap gap-1">
+          {/* Severity Filter Tabs */}
+          <div className="flex flex-wrap gap-1.5">
             {(["all", ...severityLevels] as const).map((level) => (
               <button
                 key={level}
                 type="button"
                 onClick={() => setSeverity(level)}
-                className={`rounded-md border px-2.5 py-1.5 font-mono text-xs tracking-wider uppercase transition-colors cursor-pointer ${
+                className={`rounded-md border px-3 py-1.5 text-xs font-semibold capitalize transition-colors cursor-pointer ${
                   severity === level
-                    ? "border-primary/60 bg-primary/20 text-primary font-semibold"
-                    : "border-border text-muted-foreground hover:bg-secondary"
+                    ? "border-primary bg-primary text-primary-foreground shadow-2xs"
+                    : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
                 }`}
               >
-                {level}
+                {level === "all" ? "All Severities" : level}
               </button>
             ))}
           </div>
@@ -366,14 +289,14 @@ function FeedPage() {
             <button
               type="button"
               onClick={() => setVerifiedOnly(!verifiedOnly)}
-              className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-mono transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
                 verifiedOnly
-                  ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-400 font-bold shadow-xs"
+                  ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold shadow-2xs"
                   : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
               title="Toggle Verified Intelligence Feeds Only"
             >
-              <ShieldCheck className="size-3.5 text-emerald-400" />
+              <ShieldCheck className="size-3.5 text-emerald-500" />
               <span>{verifiedOnly ? "Verified Feeds Only" : "All Feeds"}</span>
             </button>
 
@@ -383,15 +306,15 @@ function FeedPage() {
               onClick={() =>
                 setSortBy(sortBy === "recent-to-past" ? "past-to-recent" : "recent-to-past")
               }
-              className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-mono transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
                 sortBy === "recent-to-past"
-                  ? "border-primary/50 bg-primary/15 text-primary font-bold shadow-xs"
+                  ? "border-primary/40 bg-primary/10 text-primary font-semibold shadow-2xs"
                   : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
               title="Toggle Chronological Order"
             >
-              <Clock className="size-3.5" />
-              <span>{sortBy === "recent-to-past" ? "Recent → Past" : "Past → Recent"}</span>
+              <Clock className="size-3.5 text-primary" />
+              <span>{sortBy === "recent-to-past" ? "Newest First" : "Oldest First"}</span>
             </button>
 
             {/* Side-by-side threat comparison matrix */}
@@ -697,8 +620,8 @@ function FeedPage() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="label-mono text-[0.7rem]">{label}</span>
-      <p className="font-display text-base sm:text-lg font-semibold text-foreground">{value}</p>
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <p className="text-base sm:text-lg font-bold text-foreground mt-0.5">{value}</p>
     </div>
   );
 }

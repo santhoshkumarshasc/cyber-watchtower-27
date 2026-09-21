@@ -44,36 +44,34 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
 
   return (
     <>
-      <article className="panel group relative flex flex-col justify-between overflow-hidden p-4 sm:p-5 transition-all hover:border-primary/50 hover:shadow-md">
-        <div
-          className="absolute inset-y-0 left-0 w-[3px]"
-          style={{ backgroundColor: `var(--${threat.severity})` }}
-        />
-
+      <article className="group relative flex flex-col justify-between overflow-hidden rounded-lg border border-border bg-card p-4 sm:p-5 transition-all hover:border-primary/50 hover:shadow-sm">
         <div>
           {/* Header metadata */}
           <div className="flex flex-wrap items-center gap-2">
             <span
-              className={`rounded-full border px-2.5 py-0.5 font-mono text-[0.65rem] tracking-[0.14em] uppercase ${severity.bg} ${severity.text}`}
+              className={`rounded px-2 py-0.5 text-[0.68rem] font-bold uppercase tracking-wider ${severity.bg} ${severity.text}`}
             >
               {severity.label}
             </span>
-            <span className="label-mono">{threat.category}</span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[0.65rem] font-mono font-medium text-emerald-400">
-              <ShieldCheck className="size-3 text-emerald-400" />
-              <span>VERIFIED ADVISORY</span>
+            <span className="text-xs font-semibold text-muted-foreground">{threat.category}</span>
+            <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 px-2 py-0.5 text-[0.68rem] font-medium text-emerald-600 dark:text-emerald-400">
+              <ShieldCheck className="size-3 text-emerald-500" />
+              <span>Verified Advisory</span>
             </span>
             <span
-              className="ml-auto flex items-center gap-1 label-mono text-xs text-muted-foreground font-mono"
+              className="ml-auto flex items-center gap-1 text-xs text-muted-foreground"
               title={`Logged: ${exactTime.local} (${exactTime.utc})`}
             >
               <Clock className="size-3 text-primary" />
-              <span className="font-semibold text-foreground/90">{liveTime}</span>
+              <span className="font-medium text-foreground">{liveTime}</span>
             </span>
           </div>
 
           {/* Title & Summary */}
-          <h3 className="mt-3 text-base sm:text-lg leading-snug font-semibold text-foreground group-hover:text-primary transition-colors">
+          <h3
+            className="mt-3 text-base sm:text-lg leading-snug font-semibold text-foreground group-hover:text-primary transition-colors cursor-pointer"
+            onClick={handleOpenDetails}
+          >
             {threat.title}
           </h3>
           <p className="mt-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
@@ -81,11 +79,13 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
           </p>
 
           {/* Risk Metrics */}
-          <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 rounded-md bg-secondary/20 p-2.5">
+          <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 rounded-md bg-secondary/30 p-2.5">
             <div>
-              <span className="label-mono text-[0.68rem]">Risk score</span>
+              <span className="text-[0.68rem] font-medium text-muted-foreground uppercase">
+                Risk score
+              </span>
               <div className="mt-1 flex items-center gap-1.5">
-                <span className={`font-mono text-xs sm:text-sm font-semibold ${severity.text}`}>
+                <span className={`text-xs sm:text-sm font-bold ${severity.text}`}>
                   {Math.round(threat.riskPercent)}%
                 </span>
                 <div className="flex-1 max-w-[60px]">
@@ -95,7 +95,9 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
             </div>
 
             <div>
-              <span className="label-mono text-[0.68rem]">Affected</span>
+              <span className="text-[0.68rem] font-medium text-muted-foreground uppercase">
+                Affected
+              </span>
               <p className="mt-1 flex items-center gap-1 text-xs text-foreground truncate">
                 <Users className="size-3 text-muted-foreground shrink-0" />
                 <span className="truncate">{threat.affectedPeople}</span>
@@ -103,7 +105,9 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
             </div>
 
             <div className="col-span-2 sm:col-span-1">
-              <span className="label-mono text-[0.68rem]">Regions</span>
+              <span className="text-[0.68rem] font-medium text-muted-foreground uppercase">
+                Regions
+              </span>
               <p className="mt-1 flex items-center gap-1 text-xs text-foreground truncate">
                 <MapPin className="size-3 text-muted-foreground shrink-0" />
                 <span className="truncate">{threat.regions.join(", ")}</span>
@@ -112,8 +116,10 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
           </div>
 
           {/* Immediate Action */}
-          <div className="mt-3.5 rounded-md border border-primary/25 bg-primary/10 p-3">
-            <span className="label-mono text-[0.68rem] text-primary">Do this now</span>
+          <div className="mt-3.5 rounded-md border border-primary/20 bg-primary/5 p-3">
+            <span className="text-[0.7rem] font-semibold text-primary uppercase tracking-wide">
+              Recommended Action
+            </span>
             <p className="mt-0.5 text-xs sm:text-sm font-medium text-foreground">
               {threat.recommendedAction}
             </p>
