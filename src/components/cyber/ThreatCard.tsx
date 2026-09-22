@@ -9,12 +9,19 @@ import {
   ChevronRight,
   Info,
   Clock,
+  Smartphone,
+  Globe,
 } from "lucide-react";
 
 import { RiskBar } from "./RiskMeter";
 import { ThreatDetailModal } from "./ThreatDetailModal";
 import { severityStyles, type Threat } from "@/lib/threat-types";
-import { useMinuteTicker, getLiveRelativeTime, getFormattedExactTime } from "@/lib/threat-utils";
+import {
+  useMinuteTicker,
+  getLiveRelativeTime,
+  getFormattedExactTime,
+  isSourceAvailableAndVerified,
+} from "@/lib/threat-utils";
 
 interface ThreatCardProps {
   threat: Threat;
@@ -26,13 +33,15 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
   // Re-evaluates relative timestamp whenever minute ticker fires
   useMinuteTicker(30);
 
+  // If source or advisory page is not available or unverified, DO NOT show on webpage
+  if (!isSourceAvailableAndVerified(threat)) {
+    return null;
+  }
+
   const severity = severityStyles[threat.severity];
   const liveTime = getLiveRelativeTime(threat.publishedLabel);
   const exactTime = getFormattedExactTime(threat.publishedLabel);
-
-  const sourceLink =
-    threat.sourceUrl ||
-    `https://www.google.com/search?q=${encodeURIComponent(threat.title + " cyber advisory")}`;
+  const sourceLink = threat.sourceUrl!;
 
   const handleOpenDetails = () => {
     if (onOpenDetails) {
@@ -54,16 +63,36 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
               {severity.label}
             </span>
             <span className="text-xs font-semibold text-muted-foreground">{threat.category}</span>
+
+            {/* Popular App / Platform tag if specified */}
+            {threat.appName && (
+              <span className="inline-flex items-center gap-1 rounded border border-border bg-secondary/80 px-2 py-0.5 text-[0.68rem] font-semibold text-foreground">
+                <Smartphone className="size-3 text-primary" />
+                <span>{threat.appName}</span>
+              </span>
+            )}
+            {threat.platform && (
+              <span className="hidden sm:inline-flex items-center gap-1 rounded bg-secondary/50 px-2 py-0.5 text-[0.68rem] text-muted-foreground">
+                <Globe className="size-2.5" />
+                <span>{threat.platform}</span>
+              </span>
+            )}
+
+            {/* Verified Source Indicator */}
             <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 px-2 py-0.5 text-[0.68rem] font-medium text-emerald-600 dark:text-emerald-400">
               <ShieldCheck className="size-3 text-emerald-500" />
-              <span>Verified Advisory</span>
+              <span>Source Available &amp; Verified</span>
             </span>
+
             <span
               className="ml-auto flex items-center gap-1 text-xs text-muted-foreground"
-              title={`Logged: ${exactTime.local} (${exactTime.utc})`}
+              title={`Logged: ${exactTime.utc}`}
+              suppressHydrationWarning
             >
               <Clock className="size-3 text-primary" />
-              <span className="font-medium text-foreground">{liveTime}</span>
+              <span className="font-medium text-foreground" suppressHydrationWarning>
+                {liveTime}
+              </span>
             </span>
           </div>
 
@@ -96,7 +125,7 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
 
             <div>
               <span className="text-[0.68rem] font-medium text-muted-foreground uppercase">
-                Affected
+                Affected Scope
               </span>
               <p className="mt-1 flex items-center gap-1 text-xs text-foreground truncate">
                 <Users className="size-3 text-muted-foreground shrink-0" />
@@ -160,7 +189,7 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
           <div className="flex items-center gap-2 label-mono text-xs truncate max-w-[220px]">
             <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
-            <span className="truncate text-foreground font-medium">
+            <span className="truncate text-foreground font-medium" title={threat.source}>
               {threat.verificationAgency || threat.source}
             </span>
           </div>
@@ -170,7 +199,7 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
             <button
               type="button"
               onClick={handleOpenDetails}
-              className="flex items-center gap-1 rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80 transition-colors"
+              className="flex items-center gap-1 rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80 transition-colors cursor-pointer"
             >
               <span>View details</span>
               <ChevronRight className="size-3" />
@@ -181,10 +210,10 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
               href={sourceLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-md bg-primary/90 px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary transition-colors shadow-xs"
-              title="Open original advisory or news source in new tab"
+              className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors shadow-xs cursor-pointer"
+              title={`Open official ${threat.source} source page in new tab`}
             >
-              <span>Source</span>
+              <span>Official Advisory</span>
               <ExternalLink className="size-3" />
             </a>
           </div>

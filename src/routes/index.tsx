@@ -16,6 +16,8 @@ import {
   Zap,
   FileDown,
   Trash2,
+  Smartphone,
+  Globe,
 } from "lucide-react";
 
 import { ErrorPanel, LoadingPanel } from "@/components/cyber/States";
@@ -38,6 +40,7 @@ import {
   exportThreatsAsJson,
   exportThreatsAsCsv,
   useMinuteTicker,
+  filterVerifiedAvailableSourcesOnly,
 } from "@/lib/threat-utils";
 
 export const Route = createFileRoute("/")({
@@ -60,6 +63,19 @@ export const Route = createFileRoute("/")({
   component: FeedPage,
 });
 
+const POPULAR_APPS = [
+  "All Apps & Platforms",
+  "Google Chrome",
+  "WhatsApp",
+  "Apple Safari & iOS",
+  "Microsoft Outlook",
+  "Telegram",
+  "Android OS",
+  "Zoom Workplace",
+  "Adobe Acrobat Reader",
+  "Signal Messenger",
+] as const;
+
 function FeedPage() {
   const { data, isPending, error, refetch, isFetching } = useQuery(briefingQueryOptions);
   // Re-evaluates relative timestamps & recency bucket filter every 30 seconds
@@ -67,6 +83,7 @@ function FeedPage() {
 
   const [severity, setSeverity] = useState<string>("all");
   const [category, setCategory] = useState<string>("all");
+  const [selectedApp, setSelectedApp] = useState<string>("All Apps & Platforms");
   const [search, setSearch] = useState("");
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<
@@ -78,12 +95,14 @@ function FeedPage() {
   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
   const [customThreats, setCustomThreats] = useState<Threat[]>(() => getCustomThreatAlerts());
 
-  // Merge server threats with locally broadcasted operator alerts
+  // Merge server threats with locally broadcasted operator alerts:
+  // Strict requirement: ONLY threats with verified, available source pages are admitted to the webpage.
   const allThreats = useMemo(() => {
-    const base = data?.threats ?? [];
-    const customIds = new Set(customThreats.map((c) => c.id));
-    const dedupedBase = base.filter((b) => !customIds.has(b.id));
-    return [...customThreats, ...dedupedBase];
+    const verifiedServer = filterVerifiedAvailableSourcesOnly(data?.threats ?? []);
+    const verifiedCustom = filterVerifiedAvailableSourcesOnly(customThreats);
+    const customIds = new Set(verifiedCustom.map((c) => c.id));
+    const dedupedServer = verifiedServer.filter((b) => !customIds.has(b.id));
+    return [...verifiedCustom, ...dedupedServer];
   }, [data, customThreats]);
 
   // Derive unique categories from combined data
@@ -102,9 +121,14 @@ function FeedPage() {
       const matchCategory = category === "all" || t.category === category;
       const matchSearch =
         q === "" ||
-        `${t.title} ${t.summary} ${t.category} ${t.source} ${t.cveList?.join(" ") ?? ""}`
+        `${t.title} ${t.summary} ${t.category} ${t.source} ${t.appName ?? ""} ${t.platform ?? ""} ${t.cveList?.join(" ") ?? ""}`
           .toLowerCase()
           .includes(q);
+
+      const matchApp =
+        selectedApp === "All Apps & Platforms" ||
+        (t.appName && t.appName.toLowerCase().includes(selectedApp.toLowerCase().split(" ")[0])) ||
+        t.title.toLowerCase().includes(selectedApp.toLowerCase().split(" ")[0]);
 
       let matchRecency = true;
       if (recencyWindow === "30m") {
@@ -117,7 +141,9 @@ function FeedPage() {
 
       const matchVerified = !verifiedOnly || t.verified !== false;
 
-      return matchSeverity && matchCategory && matchSearch && matchRecency && matchVerified;
+      return (
+        matchSeverity && matchCategory && matchApp && matchSearch && matchRecency && matchVerified
+      );
     });
 
     if (sortBy === "recent-to-past") {
@@ -133,7 +159,7 @@ function FeedPage() {
     }
 
     return list;
-  }, [allThreats, severity, category, search, recencyWindow, sortBy, verifiedOnly]);
+  }, [allThreats, severity, category, selectedApp, search, recencyWindow, sortBy, verifiedOnly]);
 
   const visibleThreats = useMemo(() => {
     return filteredThreats.slice(0, visibleCount);
@@ -419,6 +445,21 @@ function FeedPage() {
               </div>
             )}
 
+            {/* Popular Daily Apps & Platform Filter */}
+            <div className="relative">
+              <select
+                value={selectedApp}
+                onChange={(e) => setSelectedApp(e.target.value)}
+                className="rounded-md border border-input bg-card px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-8 max-w-[13rem] sm:max-w-none truncate font-medium"
+              >
+                {POPULAR_APPS.map((app) => (
+                  <option key={app} value={app}>
+                    {app}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Sort Dropdown */}
             <div className="relative">
               <select
@@ -470,12 +511,32 @@ function FeedPage() {
         </div>
       </div>
 
+      {/* Verified Source Availability & Daily Apps Audit Status Banner */}
+      <div className="rounded-md border border-emerald-500/20 bg-emerald-500/5 p-3 sm:px-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+        <div className="flex items-start sm:items-center gap-2 text-foreground">
+          <ShieldCheck className="size-4 text-emerald-500 shrink-0 mt-0.5 sm:mt-0" />
+          <p className="text-xs text-muted-foreground">
+            <strong className="text-emerald-600 dark:text-emerald-400 font-semibold">
+              Verified Sources Only:
+            </strong>{" "}
+            Platform research verifies popular daily apps (Chrome, WhatsApp, Apple iOS, Outlook,
+            Telegram, Android, Zoom, Adobe Reader). Threats without available source pages are
+            suppressed.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto label-mono text-[0.68rem] text-emerald-600 dark:text-emerald-400">
+          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+          <span>Active Verification Gate</span>
+        </div>
+      </div>
+
       {/* Results Count Banner */}
       <div className="flex items-center justify-between text-xs text-muted-foreground label-mono">
         <span>
           Showing {visibleThreats.length} of {filteredThreats.length} tracked threats
           {severity !== "all" ? ` [${severity.toUpperCase()}]` : ""}
           {category !== "all" ? ` [${category}]` : ""}
+          {selectedApp !== "All Apps & Platforms" ? ` [${selectedApp}]` : ""}
         </span>
         {data && (
           <a

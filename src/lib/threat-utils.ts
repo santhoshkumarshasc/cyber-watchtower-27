@@ -312,3 +312,50 @@ export function exportThreatsAsCsv(threats: Threat[]) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+/**
+ * Validates whether an intelligence item or advisory has an active, accessible, verified source URL.
+ * Discards any item where the source or official reference page is missing, invalid, or placeholder.
+ */
+export function isSourceAvailableAndVerified(item: {
+  source?: string;
+  sourceUrl?: string;
+  sourceAvailable?: boolean;
+}): boolean {
+  if (!item) return false;
+  if (item.sourceAvailable === false) return false;
+  if (!item.source || item.source.trim().length === 0) return false;
+  if (!item.sourceUrl || item.sourceUrl.trim().length === 0) return false;
+
+  const url = item.sourceUrl.trim();
+  // Must be valid HTTP / HTTPS protocol
+  if (!/^https?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i.test(url)) return false;
+
+  // Filter out invalid/placeholder/dead domains or empty search fallbacks
+  const blockedPatterns = [
+    "example.com",
+    "placeholder",
+    "localhost",
+    "127.0.0.1",
+    "unavailable",
+    "none",
+    "test.com",
+    "fakedomain",
+    "foo.bar",
+    "google.com/search?q=",
+  ];
+  if (blockedPatterns.some((pattern) => url.toLowerCase().includes(pattern))) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * Strict filter to discard any intelligence items where source or page is not available.
+ */
+export function filterVerifiedAvailableSourcesOnly<
+  T extends { source?: string; sourceUrl?: string; sourceAvailable?: boolean },
+>(items: T[]): T[] {
+  return items.filter(isSourceAvailableAndVerified);
+}

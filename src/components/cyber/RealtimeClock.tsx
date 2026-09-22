@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Clock, Globe, Laptop, Calendar, CheckCircle2, Shield } from "lucide-react";
+import { Globe, Laptop, Calendar, CheckCircle2 } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export interface RealtimeClockProps {
@@ -13,11 +13,13 @@ export function RealtimeClock({
   className = "",
   showTimezone = true,
 }: RealtimeClockProps) {
+  const [mounted, setMounted] = useState<boolean>(false);
   const [time, setTime] = useState<Date>(() => new Date());
   const [use24Hour, setUse24Hour] = useState<boolean>(true);
   const [copiedFormat, setCopiedFormat] = useState<string | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     // Tick precisely every second
     const interval = setInterval(() => {
       setTime(new Date());
@@ -25,40 +27,49 @@ export function RealtimeClock({
     return () => clearInterval(interval);
   }, []);
 
-  // Formatters
-  const localTimeStr = time.toLocaleTimeString("en-US", {
-    hour12: !use24Hour,
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  });
+  // Formatters (Safe for SSR hydration)
+  const localTimeStr = mounted
+    ? time.toLocaleTimeString("en-US", {
+        hour12: !use24Hour,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+    : "--:--:--";
 
-  const utcTimeStr = time.toISOString().substring(11, 19) + " UTC";
+  const utcTimeStr = mounted ? time.toISOString().substring(11, 19) + " UTC" : "--:--:-- UTC";
 
-  const todayFullDate = time.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const todayFullDate = mounted
+    ? time.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "Live Threat Intelligence Date";
 
-  const todayShortDate = time.toLocaleDateString("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  const todayShortDate = mounted
+    ? time.toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "Live Station Date";
 
-  const utcDateStr = time.toISOString().substring(0, 10);
+  const utcDateStr = mounted ? time.toISOString().substring(0, 10) : "YYYY-MM-DD";
 
-  const timezoneName = Intl.DateTimeFormat().resolvedOptions().timeZone || "Local";
-  const timezoneOffsetMinutes = -time.getTimezoneOffset();
+  const timezoneName = mounted
+    ? Intl.DateTimeFormat().resolvedOptions().timeZone || "Local"
+    : "Local";
+  const timezoneOffsetMinutes = mounted ? -time.getTimezoneOffset() : 0;
   const offsetSign = timezoneOffsetMinutes >= 0 ? "+" : "-";
   const offsetHours = String(Math.floor(Math.abs(timezoneOffsetMinutes) / 60)).padStart(2, "0");
   const offsetMins = String(Math.abs(timezoneOffsetMinutes) % 60).padStart(2, "0");
   const formattedOffset = `UTC${offsetSign}${offsetHours}:${offsetMins}`;
 
   const copyToClipboard = (text: string, label: string) => {
+    if (!navigator?.clipboard) return;
     navigator.clipboard.writeText(text);
     setCopiedFormat(label);
     setTimeout(() => setCopiedFormat(null), 2000);
@@ -73,7 +84,7 @@ export function RealtimeClock({
         <div className="flex items-center justify-between text-xs border-b border-border/50 pb-2">
           <div className="flex items-center gap-1.5 font-semibold text-foreground">
             <Calendar className="size-3.5 text-primary" />
-            <span>{todayShortDate}</span>
+            <span suppressHydrationWarning>{todayShortDate}</span>
           </div>
           <button
             type="button"
@@ -90,14 +101,18 @@ export function RealtimeClock({
               <Globe className="size-3 text-primary" />
               UTC
             </div>
-            <div className="font-bold text-foreground mt-0.5">{utcTimeStr}</div>
+            <div className="font-bold text-foreground mt-0.5 font-mono" suppressHydrationWarning>
+              {utcTimeStr}
+            </div>
           </div>
           <div className="rounded bg-secondary/40 border border-border/50 p-2">
             <div className="text-[0.68rem] text-muted-foreground flex items-center gap-1">
               <Laptop className="size-3 text-muted-foreground" />
-              Local ({timezoneName})
+              Local {mounted ? `(${timezoneName})` : ""}
             </div>
-            <div className="font-bold text-foreground mt-0.5">{localTimeStr}</div>
+            <div className="font-bold text-foreground mt-0.5 font-mono" suppressHydrationWarning>
+              {localTimeStr}
+            </div>
           </div>
         </div>
       </div>
@@ -119,7 +134,7 @@ export function RealtimeClock({
               Today's Live Threat Intelligence
             </div>
             <div className="text-base sm:text-lg font-bold text-foreground flex flex-wrap items-center gap-2">
-              <span>{todayFullDate}</span>
+              <span suppressHydrationWarning>{todayFullDate}</span>
               <span className="inline-flex items-center gap-1 text-xs font-normal text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full">
                 <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live Monitoring
@@ -131,13 +146,19 @@ export function RealtimeClock({
         <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs">
           <div className="flex items-center gap-1.5 rounded-md bg-secondary/70 px-3 py-1.5 border border-border/80">
             <Globe className="size-3.5 text-primary shrink-0" />
-            <span className="font-semibold text-foreground">{utcTimeStr}</span>
+            <span className="font-semibold text-foreground font-mono" suppressHydrationWarning>
+              {utcTimeStr}
+            </span>
             <span className="text-muted-foreground text-[0.7rem]">(Zulu)</span>
           </div>
           <div className="flex items-center gap-1.5 rounded-md bg-secondary/70 px-3 py-1.5 border border-border/80">
             <Laptop className="size-3.5 text-muted-foreground shrink-0" />
-            <span className="text-foreground font-medium">{localTimeStr}</span>
-            <span className="text-muted-foreground text-[0.7rem]">{timezoneName}</span>
+            <span className="text-foreground font-medium font-mono" suppressHydrationWarning>
+              {localTimeStr}
+            </span>
+            <span className="text-muted-foreground text-[0.7rem]" suppressHydrationWarning>
+              {showTimezone ? timezoneName : ""}
+            </span>
           </div>
           <button
             type="button"
@@ -160,13 +181,18 @@ export function RealtimeClock({
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 pb-2.5 mb-3">
           <div className="flex items-center gap-2">
             <Calendar className="size-4 text-primary" />
-            <span className="text-xs font-semibold text-foreground">Today: {todayFullDate}</span>
+            <span className="text-xs font-semibold text-foreground" suppressHydrationWarning>
+              Today: {todayFullDate}
+            </span>
           </div>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1 rounded bg-secondary px-2 py-0.5 border border-border/60">
+            <span
+              className="inline-flex items-center gap-1 rounded bg-secondary px-2 py-0.5 border border-border/60"
+              suppressHydrationWarning
+            >
               <Globe className="size-3 text-primary" />
-              {timezoneName} ({formattedOffset})
+              {mounted ? `${timezoneName} (${formattedOffset})` : "UTC Synced"}
             </span>
             <button
               type="button"
@@ -187,10 +213,15 @@ export function RealtimeClock({
                 <Globe className="size-3.5 text-primary" />
                 Coordinated Universal Time (UTC)
               </div>
-              <div className="text-lg sm:text-xl font-bold text-foreground mt-0.5">
+              <div
+                className="text-lg sm:text-xl font-bold text-foreground mt-0.5 font-mono"
+                suppressHydrationWarning
+              >
                 {utcTimeStr}
               </div>
-              <div className="text-xs text-muted-foreground">{utcDateStr}</div>
+              <div className="text-xs text-muted-foreground font-mono" suppressHydrationWarning>
+                {utcDateStr}
+              </div>
             </div>
             <button
               type="button"
@@ -208,10 +239,15 @@ export function RealtimeClock({
                 <Laptop className="size-3.5 text-primary" />
                 Your Station Local Time
               </div>
-              <div className="text-lg sm:text-xl font-bold text-foreground mt-0.5">
+              <div
+                className="text-lg sm:text-xl font-bold text-foreground mt-0.5 font-mono"
+                suppressHydrationWarning
+              >
                 {localTimeStr}
               </div>
-              <div className="text-xs text-muted-foreground">{todayShortDate}</div>
+              <div className="text-xs text-muted-foreground" suppressHydrationWarning>
+                {todayShortDate}
+              </div>
             </div>
             <button
               type="button"
@@ -233,9 +269,13 @@ export function RealtimeClock({
         className={`inline-flex items-center gap-1.5 rounded border border-border bg-secondary/80 px-2.5 py-1 text-xs text-foreground ${className}`}
       >
         <Calendar className="size-3 text-primary shrink-0" />
-        <span className="font-semibold text-foreground">{todayShortDate}</span>
+        <span className="font-semibold text-foreground" suppressHydrationWarning>
+          {todayShortDate}
+        </span>
         <span className="text-muted-foreground">•</span>
-        <span className="font-medium text-primary">{utcTimeStr}</span>
+        <span className="font-medium text-primary font-mono" suppressHydrationWarning>
+          {utcTimeStr}
+        </span>
       </div>
     );
   }
@@ -254,16 +294,29 @@ export function RealtimeClock({
 
           {/* Desktop full format with Today's Date */}
           <div className="hidden md:flex items-center gap-1.5">
-            <span className="font-semibold text-foreground">{todayShortDate}</span>
+            <span className="font-semibold text-foreground" suppressHydrationWarning>
+              {todayShortDate}
+            </span>
             <span className="text-muted-foreground/60">•</span>
-            <span className="font-medium text-primary">{localTimeStr}</span>
-            <span className="text-muted-foreground text-[0.7rem]">({utcTimeStr})</span>
+            <span className="font-medium text-primary font-mono" suppressHydrationWarning>
+              {localTimeStr}
+            </span>
+            <span
+              className="text-muted-foreground text-[0.7rem] font-mono"
+              suppressHydrationWarning
+            >
+              ({utcTimeStr})
+            </span>
           </div>
 
           {/* Mobile/Compact format */}
           <div className="flex md:hidden items-center gap-1 text-xs">
-            <span className="font-semibold text-foreground">{todayShortDate.split(",")[0]}</span>
-            <span className="text-primary font-medium">{localTimeStr.slice(0, 5)}</span>
+            <span className="font-semibold text-foreground" suppressHydrationWarning>
+              {mounted ? todayShortDate.split(",")[0] : "Today"}
+            </span>
+            <span className="text-primary font-medium font-mono" suppressHydrationWarning>
+              {mounted ? localTimeStr.slice(0, 5) : "--:--"}
+            </span>
           </div>
         </button>
       </PopoverTrigger>
@@ -278,7 +331,12 @@ export function RealtimeClock({
               <Calendar className="size-4.5" />
             </div>
             <div>
-              <div className="font-bold text-foreground text-sm leading-tight">{todayFullDate}</div>
+              <div
+                className="font-bold text-foreground text-sm leading-tight"
+                suppressHydrationWarning
+              >
+                {todayFullDate}
+              </div>
               <div className="text-[0.72rem] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                 <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Live Real-Time Clock Synchronized
@@ -302,8 +360,18 @@ export function RealtimeClock({
                 <Globe className="size-3 text-primary" />
                 Coordinated Universal Time (UTC)
               </div>
-              <div className="text-base font-bold text-primary mt-0.5">{utcTimeStr}</div>
-              <div className="text-[0.72rem] text-muted-foreground">{utcDateStr}</div>
+              <div
+                className="text-base font-bold text-primary mt-0.5 font-mono"
+                suppressHydrationWarning
+              >
+                {utcTimeStr}
+              </div>
+              <div
+                className="text-[0.72rem] text-muted-foreground font-mono"
+                suppressHydrationWarning
+              >
+                {utcDateStr}
+              </div>
             </div>
             <button
               type="button"
@@ -320,8 +388,15 @@ export function RealtimeClock({
                 <Laptop className="size-3 text-primary" />
                 Your Station Local Time ({timezoneName})
               </div>
-              <div className="text-base font-bold text-foreground mt-0.5">{localTimeStr}</div>
-              <div className="text-[0.72rem] text-muted-foreground">{todayFullDate}</div>
+              <div
+                className="text-base font-bold text-foreground mt-0.5 font-mono"
+                suppressHydrationWarning
+              >
+                {localTimeStr}
+              </div>
+              <div className="text-[0.72rem] text-muted-foreground" suppressHydrationWarning>
+                {todayFullDate}
+              </div>
             </div>
             <button
               type="button"
@@ -337,11 +412,18 @@ export function RealtimeClock({
         <div className="rounded border border-border/80 bg-secondary/30 p-2.5 text-[0.72rem] space-y-1 text-muted-foreground">
           <div className="flex justify-between">
             <span>Time Zone:</span>
-            <span className="text-foreground font-semibold">{timezoneName}</span>
+            <span className="text-foreground font-semibold" suppressHydrationWarning>
+              {timezoneName}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>ISO 8601 Timestamp:</span>
-            <span className="text-foreground truncate max-w-[170px]">{time.toISOString()}</span>
+            <span
+              className="text-foreground truncate max-w-[170px] font-mono"
+              suppressHydrationWarning
+            >
+              {mounted ? time.toISOString() : "Loading..."}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Status:</span>

@@ -11,7 +11,11 @@ import {
 } from "lucide-react";
 
 import type { NewsItem } from "@/lib/threat-types";
-import { useMinuteTicker, getLiveRelativeTime } from "@/lib/threat-utils";
+import {
+  useMinuteTicker,
+  getLiveRelativeTime,
+  isSourceAvailableAndVerified,
+} from "@/lib/threat-utils";
 
 interface NewsTickerProps {
   news?: NewsItem[];
@@ -22,7 +26,9 @@ export function NewsTicker({ news }: NewsTickerProps) {
   // Re-evaluate news timestamps every 30 seconds
   useMinuteTicker(30);
 
-  if (!news || news.length === 0) return null;
+  const verifiedNews = (news ?? []).filter(isSourceAvailableAndVerified);
+
+  if (verifiedNews.length === 0) return null;
 
   return (
     <div className="rounded-lg border border-border bg-card overflow-hidden shadow-xs">
@@ -38,11 +44,11 @@ export function NewsTicker({ news }: NewsTickerProps) {
                 Verified Cyber News &amp; Security Dispatches
               </span>
               <span className="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[0.68rem] font-medium text-emerald-600 dark:text-emerald-400">
-                {news.length} Live Feeds
+                {verifiedNews.length} Live Feeds
               </span>
             </div>
             <p className="text-xs text-muted-foreground hidden sm:block">
-              Curated official advisories from CISA, NIST, BleepingComputer, and CERT networks
+              Confirmed official security bulletins and vendor PSIRT advisories
             </p>
           </div>
         </div>
@@ -86,7 +92,7 @@ export function NewsTicker({ news }: NewsTickerProps) {
               <span>VERIFIED</span>
             </span>
             <span className="font-semibold text-foreground truncate">{news[0].title}</span>
-            <span className="text-muted-foreground text-xs shrink-0">
+            <span className="text-muted-foreground text-xs shrink-0" suppressHydrationWarning>
               · {news[0].source} ({getLiveRelativeTime(news[0].timestamp)})
             </span>
           </div>
@@ -129,7 +135,7 @@ export function NewsTicker({ news }: NewsTickerProps) {
                   </div>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Clock className="size-3 text-muted-foreground" />
-                    <span>{getLiveRelativeTime(item.timestamp)}</span>
+                    <span suppressHydrationWarning>{getLiveRelativeTime(item.timestamp)}</span>
                   </div>
                 </div>
 

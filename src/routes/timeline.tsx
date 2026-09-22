@@ -34,6 +34,7 @@ import {
   useMinuteTicker,
   getLiveRelativeTime,
   getFormattedExactTime,
+  filterVerifiedAvailableSourcesOnly,
 } from "@/lib/threat-utils";
 import { severityLevels, severityStyles, type Threat } from "@/lib/threat-types";
 import { RiskBar } from "@/components/cyber/RiskMeter";
@@ -69,12 +70,13 @@ function TimelinePage() {
   const [selectedThreat, setSelectedThreat] = useState<Threat | null>(null);
   const [customThreats, setCustomThreats] = useState<Threat[]>(() => getCustomThreatAlerts());
 
-  // Merge server threats with locally broadcasted operator alerts
+  // Merge server threats with locally broadcasted operator alerts with strict source verification
   const allThreats = useMemo(() => {
-    const base = data?.threats ?? [];
-    const customIds = new Set(customThreats.map((c) => c.id));
+    const base = filterVerifiedAvailableSourcesOnly(data?.threats ?? []);
+    const validCustom = filterVerifiedAvailableSourcesOnly(customThreats);
+    const customIds = new Set(validCustom.map((c) => c.id));
     const dedupedBase = base.filter((b) => !customIds.has(b.id));
-    return [...customThreats, ...dedupedBase];
+    return [...validCustom, ...dedupedBase];
   }, [data, customThreats]);
 
   // Filter threats
@@ -316,10 +318,13 @@ function TimelinePage() {
                     <div className="flex items-center gap-2">
                       <span
                         className="flex items-center gap-1 font-mono text-xs font-bold text-foreground"
-                        title={`Logged: ${getFormattedExactTime(threat.publishedLabel).local} (${getFormattedExactTime(threat.publishedLabel).utc})`}
+                        title={`Logged: ${getFormattedExactTime(threat.publishedLabel).utc}`}
+                        suppressHydrationWarning
                       >
                         <Clock className="size-3 text-primary" />
-                        {getLiveRelativeTime(threat.publishedLabel)}
+                        <span suppressHydrationWarning>
+                          {getLiveRelativeTime(threat.publishedLabel)}
+                        </span>
                       </span>
                       <span
                         className={`px-2 py-0.5 rounded text-[0.65rem] font-mono uppercase font-semibold ${

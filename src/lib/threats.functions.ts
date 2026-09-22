@@ -3,65 +3,74 @@ import { GoogleGenAI } from "@google/genai";
 
 import { briefingSchema, type Briefing } from "./threat-types";
 import { getFallbackBriefing } from "./default-briefing";
+import { filterVerifiedAvailableSourcesOnly } from "./threat-utils";
 
 const PROMPT = `You are CyberGuard, an authoritative real-time cybersecurity threat intelligence desk.
 Produce a fresh, urgent situational briefing of the current global cyber threat landscape,
-drawing on the kinds of real reporting published by CISA/US-CERT, NIST NVD, national CERTs,
-vendor threat labs (Microsoft Security, Google TAG, Mandiant, Kaspersky, Palo Alto Unit 42)
-and premier cybersecurity intelligence press (The Hacker News, BleepingComputer, Krebs on Security, Dark Reading).
+strictly researching and verifying cybersecurity vulnerabilities across all computing platforms
+and popular daily-usage applications (such as WhatsApp, Google Chrome, Apple iOS & Safari,
+Microsoft Windows & Outlook, Telegram, Android OS & Google Play, Zoom Workplace, Adobe Acrobat Reader, and Signal).
+
+CRITICAL DIRECTIVES:
+1. STRICT SOURCE AVAILABILITY RULE: ONLY collect and include threats and news items that have confirmed, active, accessible, and publicly available official security advisory pages.
+2. IF A SOURCE OR ADVISORY PAGE IS NOT AVAILABLE OR UNCONFIRMED, DO NOT INCLUDE THAT THREAT OR NEWS ITEM ON THE WEBPAGE.
+3. Every "sourceUrl" MUST be an actual, working, authoritative URL from official entities (e.g. https://www.cisa.gov/, https://nvd.nist.gov/, https://chromereleases.googleblog.com/, https://support.apple.com/, https://msrc.microsoft.com/, https://www.whatsapp.com/security/advisories/, https://www.zoom.com/en/trust/security-bulletin/, https://helpx.adobe.com/security/, https://source.android.com/security/bulletin).
+4. Focus on vulnerabilities affecting popular apps and operating platforms used by millions of daily users.
 
 Return ONLY valid JSON with no markdown fences, matching exactly this structure:
 {
-  "generatedLabel": "Live Briefing",
-  "globalRiskPercent": 78,
+  "generatedLabel": "Live Intelligence Desk · Verified Source Audit",
+  "globalRiskPercent": 82,
   "riskTrend": "+4% vs last 24h",
-  "headline": "One authoritative headline summarizing today's active zero-days, ransomware extortion and infrastructure threats",
-  "activeIncidents": 142,
-  "peopleAffectedLabel": "54.8M accounts & endpoints",
+  "headline": "Authoritative headline summarizing verified zero-days and vulnerabilities across daily-use apps and OS platforms",
+  "activeIncidents": 154,
+  "peopleAffectedLabel": "3.4 Billion daily active app users",
   "categoryBreakdown": [
-    { "name": "Zero-Day Exploits", "value": 34 },
-    { "name": "Ransomware & Extortion", "value": 26 },
-    { "name": "Supply Chain Infiltration", "value": 18 },
-    { "name": "Phishing & Social Eng.", "value": 14 },
-    { "name": "Data Breaches", "value": 8 }
+    { "name": "Browser & Web Engines", "value": 32 },
+    { "name": "Daily Messaging & VoIP", "value": 28 },
+    { "name": "Mobile OS & Kernel", "value": 22 },
+    { "name": "Workplace & Office Apps", "value": 18 }
   ],
   "breakingNews": [
     {
       "id": "news-1",
-      "title": "Headline of urgent breaking cyber news",
-      "source": "CISA / BleepingComputer / The Hacker News / KrebsOnSecurity",
-      "sourceUrl": "https://www.cisa.gov/news-events/cybersecurity-advisories",
+      "title": "Headline of urgent verified cyber news",
+      "source": "Official Agency or Vendor Lab (e.g. Google Chrome Releases / Apple Support / CISA KEV / MSRC)",
+      "sourceUrl": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
       "timestamp": "15m ago",
-      "category": "Zero-day / Ransomware / Cloud / Breach",
-      "summary": "Concise 1-2 sentence breakdown of what happened and immediate impact",
+      "category": "Zero-day / Browser / Mobile",
+      "summary": "Concise 1-2 sentence breakdown of impact on everyday users and confirmed patch",
       "urgency": "critical" | "high" | "medium" | "info"
     }
   ],
   "threats": [
     {
       "id": "short-unique-slug",
-      "title": "Clear informative title of threat or incident",
-      "source": "CISA / FBI Cyber / Microsoft Threat Intelligence / etc",
-      "sourceUrl": "https://www.cisa.gov/news-events/cybersecurity-advisories",
-      "category": "Zero-day" | "Ransomware" | "Supply chain" | "Phishing" | "Data breach" | "Mobile malware" | "Critical infrastructure",
+      "title": "Clear informative title specifying the app or platform (e.g. Google Chrome, WhatsApp, Apple iOS, Windows Outlook)",
+      "appName": "Name of popular daily app (e.g. WhatsApp / Google Chrome / Apple Safari / Microsoft Outlook / Telegram / Zoom / Android OS / Adobe Acrobat)",
+      "platform": "Operating platform (e.g. iOS & Android / Windows & macOS / Cross-Platform)",
+      "source": "CISA KEV / NIST NVD / Google Chrome Security / Apple Support / MSRC",
+      "sourceUrl": "https://nvd.nist.gov/vuln/detail/CVE-XXXX-XXXX",
+      "sourceAvailable": true,
+      "category": "Zero-day" | "Daily Messaging & VoIP" | "Browser & Web Engines" | "Mobile OS & Kernel" | "Workplace & Office",
       "severity": "critical" | "high" | "medium" | "low",
-      "riskPercent": 85,
-      "affectedPeople": "e.g. 1.2M devices / 450K patients / Global enterprise",
-      "regions": ["North America", "Europe", "Asia-Pacific"],
-      "summary": "2 sentences describing attacker actions, exploitation mechanics and operational disruption",
-      "recommendedAction": "Concrete immediate defense action (e.g. patch ID, firewall block, credential reset)",
+      "riskPercent": 88,
+      "affectedPeople": "e.g. 2.5 Billion mobile accounts / Global enterprise",
+      "regions": ["North America", "Europe", "Asia-Pacific", "Global"],
+      "summary": "2 sentences describing exploitation mechanics, vulnerable components, and user impact",
+      "recommendedAction": "Concrete immediate defense action (e.g. update app from App Store / Google Play / Settings)",
       "publishedLabel": "22 minutes ago",
-      "cveList": ["CVE-2026-XXXX"],
-      "attackVector": "Exploit mechanism e.g. Pre-auth RCE / Memory Corruption / Spearphishing",
-      "mitreTactics": ["T1190 - Exploit Public-Facing Application", "T1078 - Valid Accounts"],
-      "indicatorsOfCompromise": ["IP / Hash / Registry entry"],
+      "cveList": ["CVE-2024-XXXX"],
+      "attackVector": "Exploit mechanism e.g. Pre-auth RCE / Memory Corruption / WebP Parsing / Drive-by Web",
+      "mitreTactics": ["T1190 - Exploit Public-Facing Application", "T1204 - User Execution"],
+      "indicatorsOfCompromise": ["File hash / Memory pattern / URI link"],
       "impactSummary": "Brief consequence summary",
       "documents": [
         {
-          "title": "Official Advisory or Directive Title",
-          "issuer": "Issuing Agency or Lab",
+          "title": "Official Advisory Title",
+          "issuer": "Issuing Agency or Vendor PSIRT",
           "kind": "Advisory" | "Technical Report" | "Emergency Directive" | "Patch Notes",
-          "url": "https://www.cisa.gov/"
+          "url": "https://nvd.nist.gov/"
         }
       ]
     }
@@ -70,13 +79,12 @@ Return ONLY valid JSON with no markdown fences, matching exactly this structure:
     {
       "title": "Practice name",
       "audience": "Everyone" | "Employees" | "Developers & IT" | "Small business",
-      "body": "2 sentences explaining the critical defense rationale",
+      "body": "2 sentences explaining the critical defense rationale for daily app hygiene",
       "steps": ["Actionable step 1", "Actionable step 2", "Actionable step 3"]
     }
   ]
 }
-Include 8 distinct, realistic threats with genuine CVE naming style and valid real-world source URLs (such as cisa.gov, nvd.nist.gov, bleepingcomputer.com, thehackernews.com, krebsonsecurity.com, ncsc.gov.uk).
-Keep every string direct and professional.`;
+Ensure every threat has a confirmed and available sourceUrl. If any threat lacks an available source page, omit it.`;
 
 function extractJson(text: string) {
   const cleaned = text
@@ -127,7 +135,15 @@ async function generateLiveBriefingWithFallback(geminiKey: string): Promise<Brie
       const rawJson = extractJson(text);
       const parsed = briefingSchema.safeParse(rawJson);
       if (parsed.success) {
-        return parsed.data;
+        // Enforce strict source verification: discard any threat or news without an available, active source URL
+        const data = parsed.data;
+        data.threats = filterVerifiedAvailableSourcesOnly(data.threats);
+        if (data.breakingNews) {
+          data.breakingNews = filterVerifiedAvailableSourcesOnly(data.breakingNews);
+        }
+        if (data.threats.length > 0) {
+          return data;
+        }
       }
     } catch {
       // Continue to next available model in the fallback chain
@@ -154,7 +170,10 @@ export const getThreatBriefing = createServerFn({ method: "POST" }).handler(
 
     // 3. If recent failure occurred within cooldown, serve previous cache or fallback immediately
     if (now - lastFailureTimestamp < ERROR_COOLDOWN_MS) {
-      return cachedBriefing?.data ?? getFallbackBriefing();
+      if (cachedBriefing?.data) return cachedBriefing.data;
+      const fb = getFallbackBriefing();
+      fb.threats = filterVerifiedAvailableSourcesOnly(fb.threats);
+      return fb;
     }
 
     // 4. Initiate generation with deduplication
@@ -163,7 +182,7 @@ export const getThreatBriefing = createServerFn({ method: "POST" }).handler(
       if (geminiKey) {
         try {
           const liveBriefing = await generateLiveBriefingWithFallback(geminiKey);
-          if (liveBriefing) {
+          if (liveBriefing && liveBriefing.threats.length > 0) {
             cachedBriefing = { data: liveBriefing, timestamp: Date.now() };
             return liveBriefing;
           }
@@ -181,6 +200,10 @@ export const getThreatBriefing = createServerFn({ method: "POST" }).handler(
       }
 
       const fallback = getFallbackBriefing();
+      fallback.threats = filterVerifiedAvailableSourcesOnly(fallback.threats);
+      if (fallback.breakingNews) {
+        fallback.breakingNews = filterVerifiedAvailableSourcesOnly(fallback.breakingNews);
+      }
       cachedBriefing = { data: fallback, timestamp: Date.now() };
       return fallback;
     })().finally(() => {
