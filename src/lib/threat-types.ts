@@ -9,6 +9,15 @@ export const documentSchema = z.object({
   url: z.string().optional(),
 });
 
+export const openSourceToolSchema = z.object({
+  name: z.string(),
+  type: z.string().default("Scanner"),
+  license: z.string().default("Open Source"),
+  repoUrl: z.string().default("https://github.com"),
+  command: z.string().default("# Run detection"),
+  description: z.string().default("Open source defensive software"),
+});
+
 export const threatSchema = z.object({
   id: z.string().default(() => `threat-${Math.random().toString(36).slice(2, 9)}`),
   title: z.string(),
@@ -36,6 +45,7 @@ export const threatSchema = z.object({
   verified: z.boolean().default(true),
   verificationAgency: z.string().default("CISA / NIST NVD Verified"),
   verificationHash: z.string().optional().default("SHA256:VERIFIED-INTEL"),
+  openSourceTools: z.array(openSourceToolSchema).optional().default([]),
 });
 
 export const newsItemSchema = z.object({

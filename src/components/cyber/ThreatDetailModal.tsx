@@ -11,12 +11,20 @@ import {
   Terminal,
   Activity,
   AlertTriangle,
+  FolderGit2,
+  Zap,
+  Download,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { RiskBar } from "./RiskMeter";
 import { severityStyles, type Threat } from "@/lib/threat-types";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  findOpenSourceSolutionsForQuery,
+  getQuickSolutionForThreat,
+} from "@/lib/opensource-solutions";
+import { QuickSolutionModal } from "./QuickSolutionModal";
 
 interface ThreatDetailModalProps {
   threat: Threat | null;
@@ -187,7 +195,7 @@ Summary: ${threat.summary}`;
                 <button
                   type="button"
                   onClick={handleCopyIocs}
-                  className="flex items-center gap-1 text-xs text-primary hover:underline"
+                  className="flex items-center gap-1 text-xs text-primary hover:underline cursor-pointer"
                 >
                   {copiedIocs ? <Check className="size-3" /> : <Copy className="size-3" />}
                   {copiedIocs ? "Copied" : "Copy IOCs"}
@@ -202,6 +210,142 @@ Summary: ${threat.summary}`;
               </div>
             </div>
           ) : null}
+
+          {/* Open Source Defensive Software & Scripts */}
+          {(() => {
+            const explicitTools = threat.openSourceTools || [];
+            const matchedSolution = getQuickSolutionForThreat(
+              threat.title,
+              threat.cveList,
+              threat.appName,
+            );
+            const matchedSolutions = findOpenSourceSolutionsForQuery(
+              `${threat.title} ${threat.appName || ""} ${threat.cveList?.join(" ") || ""}`,
+            );
+            const fallbackTools = matchedSolutions.flatMap((s) => s.openSourceTools);
+            const displayedTools =
+              explicitTools.length > 0 ? explicitTools : fallbackTools.slice(0, 3);
+
+            if (displayedTools.length === 0 && !matchedSolution) return null;
+
+            return (
+              <div className="rounded-md border border-border bg-card p-3.5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1.5 label-mono text-xs font-semibold text-foreground">
+                    <FolderGit2 className="size-3.5 text-primary" /> Open Source Defensive Software
+                    Available
+                  </span>
+                  <a
+                    href="/opensource"
+                    className="label-mono text-[0.68rem] text-primary hover:underline flex items-center gap-1"
+                  >
+                    View All OSS Solutions <ExternalLink className="size-2.5" />
+                  </a>
+                </div>
+
+                {/* 1-Click Quick Solution Banner if problem is identified */}
+                {matchedSolution && (
+                  <div className="rounded border border-amber-500/40 bg-amber-500/10 p-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="space-y-0.5 min-w-0">
+                      <div className="flex items-center gap-1.5 text-[0.68rem] font-mono font-bold text-amber-600 dark:text-amber-400">
+                        <Zap className="size-3.5 fill-amber-500 text-amber-500 shrink-0" />
+                        <span>Instant Quick Solution Available:</span>
+                      </div>
+                      <p className="text-xs text-foreground/90 font-medium truncate">
+                        {matchedSolution.quickSolutionSummary}
+                      </p>
+                    </div>
+
+                    <QuickSolutionModal
+                      solution={matchedSolution}
+                      triggerButton={
+                        <button
+                          type="button"
+                          className="inline-flex items-center gap-1 rounded bg-amber-600 dark:bg-amber-500 text-white dark:text-black font-semibold text-xs px-2.5 py-1.5 hover:opacity-90 transition-opacity cursor-pointer shrink-0 shadow-xs"
+                        >
+                          <Zap className="size-3.5 fill-current" />
+                          <span>Get Quick Solution</span>
+                        </button>
+                      }
+                    />
+                  </div>
+                )}
+
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {displayedTools.map((tool, idx) => {
+                    const downloadUrl =
+                      "downloadUrl" in tool && typeof tool.downloadUrl === "string"
+                        ? tool.downloadUrl
+                        : tool.repoUrl;
+
+                    return (
+                      <div
+                        key={idx}
+                        className="rounded border border-border/80 bg-secondary/30 p-2.5 space-y-1.5 flex flex-col justify-between"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-foreground">{tool.name}</span>
+                            <span className="label-mono text-[0.62rem] rounded bg-primary/10 text-primary px-1.5 py-0.2">
+                              {tool.type}
+                            </span>
+                          </div>
+                          <p className="text-[0.72rem] text-muted-foreground leading-snug">
+                            {tool.description}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1.5 pt-1">
+                          <div className="flex items-center justify-between gap-1">
+                            {(() => {
+                              const cmd =
+                                "command" in tool && typeof tool.command === "string"
+                                  ? tool.command
+                                  : "executeCmd" in tool && typeof tool.executeCmd === "string"
+                                    ? tool.executeCmd
+                                    : "";
+                              return (
+                                <>
+                                  <code className="text-[0.68rem] font-mono text-foreground/80 bg-background/80 px-1.5 py-0.5 rounded border border-border/50 truncate flex-1">
+                                    {cmd}
+                                  </code>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(cmd);
+                                      toast.success(`Copied command for ${tool.name}`);
+                                    }}
+                                    className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground cursor-pointer shrink-0"
+                                    title="Copy command"
+                                  >
+                                    <Copy className="size-3" />
+                                  </button>
+                                </>
+                              );
+                            })()}
+                          </div>
+
+                          <div className="flex items-center justify-between pt-1 border-t border-border/50 text-[0.68rem]">
+                            <span className="text-muted-foreground font-mono">{tool.license}</span>
+                            <a
+                              href={downloadUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
+                            >
+                              <Download className="size-3" />
+                              <span>Direct Download</span>
+                              <ExternalLink className="size-2.5" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
 
           {/* Reference Advisories and Documents */}
           <div>

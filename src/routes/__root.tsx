@@ -85,13 +85,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "CyberGuard tracks live cyber threats, real-time clock telemetry, risk analytics, zero-day CVE disclosures, and defensive containment guidance.",
+          "Fast and streamlined real-time cybersecurity operations desk with verified threat feeds, chronological recent-to-past tracking, risk analytics, and instant operator alerts.",
       },
       { property: "og:title", content: "CyberGuard — Real-Time Cybersecurity Operations Desk" },
       {
         property: "og:description",
         content:
-          "CyberGuard tracks live cyber threats, real-time clock telemetry, risk analytics, zero-day CVE disclosures, and defensive containment guidance.",
+          "Fast and streamlined real-time cybersecurity operations desk with verified threat feeds, chronological recent-to-past tracking, risk analytics, and instant operator alerts.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -277,6 +277,10 @@ function RootComponent() {
               <span>CyberGuard — Real-time cybersecurity intelligence desk.</span>
             </div>
             <div className="flex items-center gap-3 text-muted-foreground">
+              <Link to="/opensource" className="hover:text-foreground underline">
+                Open Source Solutions
+              </Link>
+              <span>&middot;</span>
               <Link to="/about" className="hover:text-foreground underline">
                 Methodology & About
               </Link>

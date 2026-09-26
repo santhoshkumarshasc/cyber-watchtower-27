@@ -109,6 +109,13 @@ export function CommandDrawer({ isOpen, onClose }: CommandDrawerProps) {
       badge: "TACTICAL",
     },
     {
+      to: "/opensource",
+      label: "Open Source Problem & Solutions",
+      desc: "Real-time vulnerability solutions and open source software tools (Trivy, Falco, OSquery)",
+      icon: Layers,
+      badge: "OSS TOOLS",
+    },
+    {
       to: "/dashboard",
       label: "Risk Analytics Dashboard",
       desc: "Global risk gauge, sector breakdown, and threat metrics",

@@ -18,6 +18,7 @@ import {
   Trash2,
   Smartphone,
   Globe,
+  FolderGit2,
 } from "lucide-react";
 
 import { ErrorPanel, LoadingPanel } from "@/components/cyber/States";
@@ -287,6 +288,26 @@ function FeedPage() {
 
       {/* Breaking News Wire Section */}
       <NewsTicker news={data?.breakingNews} />
+
+      {/* Quick Access to Open Source Problem-Solution Hub */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-lg border border-primary/30 bg-primary/5 px-3.5 py-2.5 text-xs shadow-2xs">
+        <div className="flex items-center gap-2 text-foreground min-w-0">
+          <FolderGit2 className="size-4 text-primary shrink-0" />
+          <span className="font-bold tracking-tight">
+            Open Source Threat &amp; Remediation Hub:
+          </span>
+          <span className="text-muted-foreground truncate hidden md:inline">
+            Direct problem root causes &amp; solutions for XZ, Log4j, Linux Kernel, runc, OpenSSL
+            with open-source tools (Trivy, Falco, OSquery, Wazuh).
+          </span>
+        </div>
+        <Link
+          to="/opensource"
+          className="inline-flex items-center gap-1 font-mono text-[0.72rem] font-bold text-primary hover:underline ml-auto shrink-0"
+        >
+          Explore OSS Solutions &rarr;
+        </Link>
+      </div>
 
       {/* Primary Toolbar: Search, Filters, Auto Refresh, Recency Order */}
       <div className="space-y-3">
