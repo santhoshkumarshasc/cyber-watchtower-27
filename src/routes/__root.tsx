@@ -187,21 +187,21 @@ function RootComponent() {
       <div className="flex min-h-screen flex-col bg-background text-foreground">
         {/* Clean, Modern Website Header */}
         <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3.5 py-2.5 sm:px-6 sm:py-3">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 py-2.5 sm:px-6 sm:py-3">
             {/* Brand Logo & Normal Website Navigation */}
-            <div className="flex items-center gap-6 shrink-0">
+            <div className="flex items-center gap-4 sm:gap-6 shrink-0 min-w-0">
               <Link
                 to="/"
-                className="flex items-center gap-2.5 focus:outline-none rounded shrink-0 group"
+                className="flex items-center gap-2 sm:gap-2.5 focus:outline-none rounded shrink-0 group min-w-0"
               >
-                <span className="flex size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-xs group-hover:scale-105 transition-transform">
-                  <ShieldCheck className="size-5" />
+                <span className="flex size-8 sm:size-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                  <ShieldCheck className="size-4.5 sm:size-5" />
                 </span>
-                <div className="flex flex-col">
-                  <span className="text-lg font-bold tracking-tight text-foreground leading-tight">
+                <div className="flex flex-col min-w-0">
+                  <span className="text-base sm:text-lg font-bold tracking-tight text-foreground leading-tight truncate">
                     Cyber<span className="text-primary">Guard</span>
                   </span>
-                  <span className="text-[0.68rem] font-medium text-muted-foreground tracking-normal">
+                  <span className="text-[0.62rem] sm:text-[0.68rem] font-medium text-muted-foreground tracking-normal truncate hidden min-[360px]:inline">
                     Verified Threat Intelligence
                   </span>
                 </div>
@@ -209,7 +209,7 @@ function RootComponent() {
             </div>
 
             {/* Right Action Bar: On mobile view, ONLY the Menu button is shown. All other options are placed inside the Menu drawer */}
-            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
               {/* Real-Time Today's Date & Clock Display (Hidden on mobile; full clock is inside Menu) */}
               <div className="hidden md:flex">
                 <RealtimeClock variant="navbar" />
@@ -250,7 +250,7 @@ function RootComponent() {
                 onClick={() => setCommandDrawerOpen(true)}
                 aria-label="Open Navigation Menu"
                 title="Open Navigation Menu"
-                className="relative flex items-center gap-2 h-9 px-3.5 rounded-md border border-border bg-card text-foreground hover:bg-secondary hover:border-primary/40 transition-all cursor-pointer shadow-xs shrink-0"
+                className="relative flex items-center gap-1.5 sm:gap-2 h-8 sm:h-9 px-2.5 sm:px-3.5 rounded-md border border-border bg-card text-foreground hover:bg-secondary hover:border-primary/40 transition-all cursor-pointer shadow-xs shrink-0"
               >
                 <Menu className="size-4 shrink-0 text-primary" />
                 <span className="text-xs font-bold tracking-tight">Menu</span>
@@ -265,18 +265,18 @@ function RootComponent() {
         </header>
 
         {/* Main Content Area */}
-        <main className="mx-auto w-full max-w-7xl flex-1 px-3.5 py-5 sm:px-6 md:py-8">
+        <main className="mx-auto w-full max-w-7xl flex-1 px-3 py-4 sm:px-6 sm:py-6 md:py-8 min-w-0">
           <Outlet />
         </main>
 
         {/* Footer */}
         <footer className="border-t border-border py-6">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 sm:px-6 label-mono text-xs">
+          <div className="mx-auto flex max-w-7xl flex-col sm:flex-row items-center justify-between gap-3 px-4 sm:px-6 label-mono text-xs text-center sm:text-left">
             <div className="flex items-center gap-2 text-muted-foreground">
-              <Radar className="size-3.5 text-primary" />
+              <Radar className="size-3.5 text-primary shrink-0" />
               <span>CyberGuard — Real-time cybersecurity intelligence desk.</span>
             </div>
-            <div className="flex items-center gap-3 text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3 text-muted-foreground">
               <Link to="/opensource" className="hover:text-foreground underline">
                 Open Source Solutions
               </Link>
@@ -285,7 +285,7 @@ function RootComponent() {
                 Methodology & About
               </Link>
               <span>&middot;</span>
-              <span>100% CISA &middot; NVD &middot; CERT Verified Feeds</span>
+              <span>100% CISA &middot; NVD &middot; CERT Feeds</span>
             </div>
           </div>
         </footer>

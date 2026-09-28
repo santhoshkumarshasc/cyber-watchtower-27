@@ -56,17 +56,17 @@ export function QuickSolutionModal({ solution, triggerButton }: QuickSolutionMod
         )}
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-5 sm:p-6 space-y-4">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 sm:p-6 space-y-4 w-[95vw] sm:w-full">
         <DialogHeader>
-          <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 text-[0.68rem] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="flex items-center gap-1 text-[0.68rem] font-mono font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full shrink-0">
               <Zap className="size-3 fill-amber-500 text-amber-500" /> Instant Quick Solution
             </span>
-            <span className="font-mono text-[0.68rem] text-muted-foreground">
+            <span className="font-mono text-[0.68rem] text-muted-foreground truncate">
               {solution.cveList.join(", ")}
             </span>
           </div>
-          <DialogTitle className="text-lg sm:text-xl font-bold font-display text-foreground leading-snug">
+          <DialogTitle className="text-base sm:text-xl font-bold font-display text-foreground leading-snug">
             {solution.title}
           </DialogTitle>
           <p className="text-xs text-muted-foreground">
@@ -78,10 +78,10 @@ export function QuickSolutionModal({ solution, triggerButton }: QuickSolutionMod
         </DialogHeader>
 
         {/* 1-Liner Emergency Quick Fix */}
-        <div className="rounded-xl border border-primary/40 bg-primary/10 p-4 space-y-2.5 shadow-xs">
-          <div className="flex items-center justify-between">
+        <div className="rounded-xl border border-primary/40 bg-primary/10 p-3.5 sm:p-4 space-y-2.5 shadow-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-1.5">
-              <Zap className="size-4 text-primary fill-primary" />
+              <Zap className="size-4 text-primary fill-primary shrink-0" />
               <span className="text-xs font-bold uppercase tracking-wider font-mono text-primary">
                 1-Liner Emergency Terminal Command
               </span>
@@ -95,7 +95,7 @@ export function QuickSolutionModal({ solution, triggerButton }: QuickSolutionMod
                   "Quick Solution 1-Liner",
                 )
               }
-              className="inline-flex items-center gap-1 rounded bg-primary text-primary-foreground px-2.5 py-1 text-xs font-semibold hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+              className="inline-flex items-center justify-center gap-1 rounded bg-primary text-primary-foreground px-2.5 py-1 text-xs font-semibold hover:bg-primary/90 transition-all cursor-pointer shadow-xs shrink-0 self-start sm:self-auto"
             >
               {copiedKey === "modal-1liner" ? (
                 <Check className="size-3" />
@@ -110,16 +110,16 @@ export function QuickSolutionModal({ solution, triggerButton }: QuickSolutionMod
             {solution.quickSolutionSummary}
           </p>
 
-          <pre className="rounded-md border border-border bg-background p-2.5 font-mono text-xs text-foreground overflow-x-auto select-all">
+          <pre className="rounded-md border border-border bg-background p-2.5 font-mono text-xs text-foreground overflow-x-auto select-all max-w-full">
             {solution.quickSolution1Liner}
           </pre>
         </div>
 
         {/* Direct Download & Open Source Software Arsenal */}
-        <div className="rounded-xl border border-border bg-card p-4 space-y-3">
-          <div className="flex items-center justify-between">
+        <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4 space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
             <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-foreground font-mono">
-              <Download className="size-4 text-primary" /> Direct Software Download Links
+              <Download className="size-4 text-primary shrink-0" /> Direct Software Download Links
             </div>
             <span className="text-[0.68rem] text-muted-foreground font-mono">
               Select tool ({solution.openSourceTools.length} available)
@@ -127,13 +127,13 @@ export function QuickSolutionModal({ solution, triggerButton }: QuickSolutionMod
           </div>
 
           {/* Tool Selector Tabs */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none flex-nowrap max-w-full">
             {solution.openSourceTools.map((tool, idx) => (
               <button
                 key={idx}
                 type="button"
                 onClick={() => setSelectedToolIdx(idx)}
-                className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                className={`rounded-md px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                   selectedToolIdx === idx
                     ? "bg-primary text-primary-foreground shadow-xs"
                     : "border border-border bg-secondary/50 text-muted-foreground hover:text-foreground"
@@ -146,7 +146,7 @@ export function QuickSolutionModal({ solution, triggerButton }: QuickSolutionMod
 
           {activeTool && (
             <div className="space-y-3 pt-1">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-2.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-border pb-2.5">
                 <div>
                   <h4 className="text-sm font-bold text-foreground flex items-center gap-1.5">
                     {activeTool.name}
@@ -157,7 +157,7 @@ export function QuickSolutionModal({ solution, triggerButton }: QuickSolutionMod
                   <p className="text-xs text-muted-foreground">{activeTool.description}</p>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 shrink-0">
                   <a
                     href={activeTool.downloadUrl}
                     target="_blank"
@@ -177,7 +177,7 @@ export function QuickSolutionModal({ solution, triggerButton }: QuickSolutionMod
                     title="Source Repository"
                   >
                     <FolderGit2 className="size-3.5" />
-                    <span className="hidden sm:inline">Source</span>
+                    <span>Source</span>
                   </a>
                 </div>
               </div>

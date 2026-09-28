@@ -288,13 +288,13 @@ function OpenSourceHubPage() {
       {/* Filter & Category Controls */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Category Pill Filters */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 sm:pb-0 scrollbar-none flex-nowrap sm:flex-wrap max-w-full">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`rounded-md px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+              className={`rounded-md px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                 selectedCategory === cat
                   ? "bg-primary text-primary-foreground shadow-xs"
                   : "border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -306,7 +306,7 @@ function OpenSourceHubPage() {
         </div>
 
         {/* Search Input */}
-        <div className="relative sm:w-72">
+        <div className="relative w-full sm:w-72">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
           <input
             type="text"
@@ -391,7 +391,7 @@ function OpenSourceHubPage() {
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-                    <div className="hidden sm:block" onClick={(e) => e.stopPropagation()}>
+                    <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
                       <QuickSolutionModal solution={item} />
                     </div>
                     <span className="hidden md:inline text-xs font-medium text-muted-foreground">
@@ -399,7 +399,7 @@ function OpenSourceHubPage() {
                     </span>
                     <button
                       type="button"
-                      className="size-8 rounded-md border border-border bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground"
+                      className="size-8 rounded-md border border-border bg-secondary flex items-center justify-center text-muted-foreground hover:text-foreground shrink-0"
                     >
                       {isExpanded ? (
                         <ChevronUp className="size-4" />
@@ -474,13 +474,13 @@ function OpenSourceHubPage() {
                     </div>
 
                     {/* Sub-tab Navigation */}
-                    <div className="flex items-center gap-2 border-b border-border pb-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 border-b border-border pb-2 overflow-x-auto scrollbar-none flex-nowrap max-w-full">
                       <button
                         type="button"
                         onClick={() =>
                           setActiveTabByItem((prev) => ({ ...prev, [item.id]: "solution" }))
                         }
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                           currentTab === "solution"
                             ? "bg-primary text-primary-foreground shadow-xs"
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -495,7 +495,7 @@ function OpenSourceHubPage() {
                         onClick={() =>
                           setActiveTabByItem((prev) => ({ ...prev, [item.id]: "tools" }))
                         }
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                           currentTab === "tools"
                             ? "bg-primary text-primary-foreground shadow-xs"
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -510,7 +510,7 @@ function OpenSourceHubPage() {
                         onClick={() =>
                           setActiveTabByItem((prev) => ({ ...prev, [item.id]: "config" }))
                         }
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all whitespace-nowrap cursor-pointer shrink-0 ${
                           currentTab === "config"
                             ? "bg-primary text-primary-foreground shadow-xs"
                             : "text-muted-foreground hover:text-foreground hover:bg-secondary"

@@ -455,7 +455,9 @@ function HuntingPage() {
         <ThreatDetailModal
           threat={selectedThreat}
           open={Boolean(selectedThreat)}
-          onClose={() => setSelectedThreat(null)}
+          onOpenChange={(open) => {
+            if (!open) setSelectedThreat(null);
+          }}
         />
       )}
     </div>

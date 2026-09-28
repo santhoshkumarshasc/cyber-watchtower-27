@@ -127,21 +127,21 @@ function DashboardPage() {
         </div>
 
         {/* Attack Category Breakdown Chart */}
-        <div className="panel p-5 sm:p-6 md:col-span-2 lg:col-span-1">
+        <div className="panel p-4 sm:p-6 md:col-span-2 lg:col-span-1 min-w-0">
           <span className="label-mono">Attack Category Breakdown</span>
-          <div className="mt-4 h-[240px]">
+          <div className="mt-4 h-[240px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart
                 data={data.categoryBreakdown}
                 layout="vertical"
-                margin={{ left: 8, right: 16 }}
+                margin={{ left: 0, right: 12, top: 4, bottom: 4 }}
               >
                 <XAxis type="number" hide />
                 <YAxis
                   type="category"
                   dataKey="name"
-                  width={120}
-                  tick={{ fill: "var(--muted-foreground)", fontSize: 11 }}
+                  width={100}
+                  tick={{ fill: "var(--muted-foreground)", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
@@ -167,7 +167,7 @@ function DashboardPage() {
 
       {/* Responsive Threats Table with "Open Original Source" buttons */}
       <div className="panel overflow-hidden">
-        <div className="p-4 border-b border-border flex flex-wrap items-center justify-between gap-2">
+        <div className="p-3.5 sm:p-4 border-b border-border flex flex-wrap items-center justify-between gap-2">
           <div>
             <h3 className="font-semibold text-sm sm:text-base">Tracked Threat Register</h3>
             <p className="text-xs text-muted-foreground">
@@ -177,8 +177,8 @@ function DashboardPage() {
           <span className="label-mono text-xs">{data.threats.length} entries</span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm min-w-[650px]">
+        <div className="overflow-x-auto scrollbar-none">
+          <table className="w-full text-left text-sm min-w-[600px]">
             <thead>
               <tr className="border-b border-border bg-secondary/30">
                 {["Threat", "Category", "Severity", "Risk", "Affected", "Source", "Action"].map(

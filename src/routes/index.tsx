@@ -290,20 +290,22 @@ function FeedPage() {
       <NewsTicker news={data?.breakingNews} />
 
       {/* Quick Access to Open Source Problem-Solution Hub */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-lg border border-primary/30 bg-primary/5 px-3.5 py-2.5 text-xs shadow-2xs">
-        <div className="flex items-center gap-2 text-foreground min-w-0">
-          <FolderGit2 className="size-4 text-primary shrink-0" />
-          <span className="font-bold tracking-tight">
-            Open Source Threat &amp; Remediation Hub:
-          </span>
-          <span className="text-muted-foreground truncate hidden md:inline">
-            Direct problem root causes &amp; solutions for XZ, Log4j, Linux Kernel, runc, OpenSSL
-            with open-source tools (Trivy, Falco, OSquery, Wazuh).
-          </span>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-4 rounded-lg border border-primary/30 bg-primary/5 p-3 sm:px-4 sm:py-2.5 text-xs shadow-2xs">
+        <div className="flex items-start sm:items-center gap-2 text-foreground min-w-0">
+          <FolderGit2 className="size-4 text-primary shrink-0 mt-0.5 sm:mt-0" />
+          <div className="min-w-0">
+            <span className="font-bold tracking-tight mr-1.5">
+              Open Source Threat &amp; Remediation Hub:
+            </span>
+            <span className="text-muted-foreground hidden md:inline">
+              Direct problem root causes &amp; solutions for XZ, Log4j, Linux Kernel, runc, OpenSSL
+              with open-source tools (Trivy, Falco, OSquery, Wazuh).
+            </span>
+          </div>
         </div>
         <Link
           to="/opensource"
-          className="inline-flex items-center gap-1 font-mono text-[0.72rem] font-bold text-primary hover:underline ml-auto shrink-0"
+          className="inline-flex items-center gap-1 font-mono text-[0.72rem] font-bold text-primary hover:underline shrink-0 self-end sm:self-auto"
         >
           Explore OSS Solutions &rarr;
         </Link>
@@ -311,15 +313,15 @@ function FeedPage() {
 
       {/* Primary Toolbar: Search, Filters, Auto Refresh, Recency Order */}
       <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           {/* Severity Filter Tabs */}
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 lg:pb-0 scrollbar-none max-w-full flex-nowrap sm:flex-wrap">
             {(["all", ...severityLevels] as const).map((level) => (
               <button
                 key={level}
                 type="button"
                 onClick={() => setSeverity(level)}
-                className={`rounded-md border px-3 py-1.5 text-xs font-semibold capitalize transition-colors cursor-pointer ${
+                className={`rounded-md border px-2.5 sm:px-3 py-1.5 text-xs font-semibold capitalize transition-colors whitespace-nowrap cursor-pointer shrink-0 ${
                   severity === level
                     ? "border-primary bg-primary text-primary-foreground shadow-2xs"
                     : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -336,15 +338,15 @@ function FeedPage() {
             <button
               type="button"
               onClick={() => setVerifiedOnly(!verifiedOnly)}
-              className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 sm:px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer shrink-0 ${
                 verifiedOnly
                   ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold shadow-2xs"
                   : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
               title="Toggle Verified Intelligence Feeds Only"
             >
-              <ShieldCheck className="size-3.5 text-emerald-500" />
-              <span>{verifiedOnly ? "Verified Feeds Only" : "All Feeds"}</span>
+              <ShieldCheck className="size-3.5 text-emerald-500 shrink-0" />
+              <span>{verifiedOnly ? "Verified Only" : "All Feeds"}</span>
             </button>
 
             {/* 1-Click Recent to Past toggle */}
@@ -353,14 +355,14 @@ function FeedPage() {
               onClick={() =>
                 setSortBy(sortBy === "recent-to-past" ? "past-to-recent" : "recent-to-past")
               }
-              className={`inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
+              className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 sm:px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer shrink-0 ${
                 sortBy === "recent-to-past"
                   ? "border-primary/40 bg-primary/10 text-primary font-semibold shadow-2xs"
                   : "border-border bg-card text-muted-foreground hover:text-foreground hover:bg-secondary"
               }`}
               title="Toggle Chronological Order"
             >
-              <Clock className="size-3.5 text-primary" />
+              <Clock className="size-3.5 text-primary shrink-0" />
               <span>{sortBy === "recent-to-past" ? "Newest First" : "Oldest First"}</span>
             </button>
 
@@ -368,7 +370,7 @@ function FeedPage() {
             <ThreatComparisonModal threats={allThreats} />
 
             {/* Export dropdown */}
-            <div className="flex items-center rounded-md border border-border bg-card">
+            <div className="flex items-center rounded-md border border-border bg-card shrink-0">
               <button
                 type="button"
                 onClick={() => exportThreatsAsCsv(filteredThreats)}
@@ -421,8 +423,8 @@ function FeedPage() {
 
           <div className="flex flex-wrap items-center gap-2">
             {/* Recency Time Filter Window */}
-            <div className="flex items-center rounded-md border border-border bg-card p-0.5 text-xs">
-              <span className="text-muted-foreground px-2 hidden sm:inline label-mono text-[0.68rem]">
+            <div className="flex items-center rounded-md border border-border bg-card p-0.5 text-xs overflow-x-auto scrollbar-none flex-nowrap max-w-full">
+              <span className="text-muted-foreground px-2 hidden sm:inline label-mono text-[0.68rem] whitespace-nowrap">
                 Recency:
               </span>
               {(
@@ -437,7 +439,7 @@ function FeedPage() {
                   key={win.id}
                   type="button"
                   onClick={() => setRecencyWindow(win.id)}
-                  className={`px-2 py-1 rounded text-[0.72rem] font-mono transition-colors cursor-pointer ${
+                  className={`px-2 py-1 rounded text-[0.72rem] font-mono transition-colors cursor-pointer whitespace-nowrap ${
                     recencyWindow === win.id
                       ? "bg-primary text-primary-foreground font-semibold"
                       : "text-muted-foreground hover:text-foreground"
@@ -450,11 +452,11 @@ function FeedPage() {
 
             {/* Category Dropdown */}
             {categories.length > 0 && (
-              <div className="relative">
+              <div className="relative flex-1 sm:flex-initial">
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="rounded-md border border-input bg-card px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-8 max-w-[11rem] sm:max-w-none truncate"
+                  className="w-full sm:w-auto rounded-md border border-input bg-card px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-7 sm:max-w-[11rem] truncate"
                 >
                   <option value="all">All Categories</option>
                   {categories.map((cat) => (
@@ -467,11 +469,11 @@ function FeedPage() {
             )}
 
             {/* Popular Daily Apps & Platform Filter */}
-            <div className="relative">
+            <div className="relative flex-1 sm:flex-initial">
               <select
                 value={selectedApp}
                 onChange={(e) => setSelectedApp(e.target.value)}
-                className="rounded-md border border-input bg-card px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-8 max-w-[13rem] sm:max-w-none truncate font-medium"
+                className="w-full sm:w-auto rounded-md border border-input bg-card px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-7 sm:max-w-[13rem] truncate font-medium"
               >
                 {POPULAR_APPS.map((app) => (
                   <option key={app} value={app}>
@@ -482,7 +484,7 @@ function FeedPage() {
             </div>
 
             {/* Sort Dropdown */}
-            <div className="relative">
+            <div className="relative flex-1 sm:flex-initial">
               <select
                 value={sortBy}
                 onChange={(e) =>
@@ -491,7 +493,7 @@ function FeedPage() {
                       "recent-to-past" | "past-to-recent" | "risk-desc" | "risk-asc" | "affected",
                   )
                 }
-                className="rounded-md border border-input bg-card px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-8 font-medium max-w-[14rem] sm:max-w-none truncate"
+                className="w-full sm:w-auto rounded-md border border-input bg-card px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-foreground outline-none focus:border-primary cursor-pointer pr-7 font-medium sm:max-w-[14rem] truncate"
               >
                 <option value="recent-to-past">Sort: Recent to Past (Newest First)</option>
                 <option value="past-to-recent">Sort: Past to Recent (Oldest First)</option>
@@ -500,34 +502,34 @@ function FeedPage() {
                 <option value="affected">Sort: Affected Scope</option>
               </select>
             </div>
-          </div>
 
-          {/* View Mode Toggle (Grid vs Compact List) */}
-          <div className="flex items-center rounded-md border border-border bg-card p-0.5">
-            <button
-              type="button"
-              onClick={() => setViewMode("grid")}
-              className={`p-1.5 rounded transition-colors cursor-pointer ${
-                viewMode === "grid"
-                  ? "bg-secondary text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-              title="Grid View"
-            >
-              <LayoutGrid className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("compact")}
-              className={`p-1.5 rounded transition-colors cursor-pointer ${
-                viewMode === "compact"
-                  ? "bg-secondary text-primary"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-              title="Compact View"
-            >
-              <List className="size-4" />
-            </button>
+            {/* View Mode Toggle (Grid vs Compact List) */}
+            <div className="flex items-center rounded-md border border-border bg-card p-0.5 shrink-0 ml-auto sm:ml-0">
+              <button
+                type="button"
+                onClick={() => setViewMode("grid")}
+                className={`p-1.5 rounded transition-colors cursor-pointer ${
+                  viewMode === "grid"
+                    ? "bg-secondary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Grid View"
+              >
+                <LayoutGrid className="size-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("compact")}
+                className={`p-1.5 rounded transition-colors cursor-pointer ${
+                  viewMode === "compact"
+                    ? "bg-secondary text-primary"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Compact View"
+              >
+                <List className="size-4" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -552,7 +554,7 @@ function FeedPage() {
       </div>
 
       {/* Results Count Banner */}
-      <div className="flex items-center justify-between text-xs text-muted-foreground label-mono">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-muted-foreground label-mono">
         <span>
           Showing {visibleThreats.length} of {filteredThreats.length} tracked threats
           {severity !== "all" ? ` [${severity.toUpperCase()}]` : ""}

@@ -173,38 +173,42 @@ function TimelinePage() {
 
       {/* Control Bar: Recency Sort Toggle, Time Brackets, Search */}
       <div className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Recency Sort Mode Selector */}
-          <div className="flex items-center rounded-md border border-border bg-card p-1">
+          <div className="flex items-center rounded-md border border-border bg-card p-0.5 sm:p-1 w-full sm:w-auto">
             <button
               type="button"
               onClick={() => setSortOrder("recent-to-past")}
-              className={`flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                 sortOrder === "recent-to-past"
                   ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <ArrowDownUp className="size-3.5" />
-              <span>Recent to Past (Newest First)</span>
+              <ArrowDownUp className="size-3.5 shrink-0" />
+              <span className="hidden min-[400px]:inline sm:hidden">Newest First</span>
+              <span className="hidden sm:inline">Recent to Past (Newest First)</span>
+              <span className="min-[400px]:hidden">Newest</span>
             </button>
             <button
               type="button"
               onClick={() => setSortOrder("past-to-recent")}
-              className={`flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
+              className={`flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded px-2.5 sm:px-3 py-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                 sortOrder === "past-to-recent"
                   ? "bg-primary text-primary-foreground shadow-xs"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <ArrowUpDown className="size-3.5" />
-              <span>Past to Recent (Oldest First)</span>
+              <ArrowUpDown className="size-3.5 shrink-0" />
+              <span className="hidden min-[400px]:inline sm:hidden">Oldest First</span>
+              <span className="hidden sm:inline">Past to Recent (Oldest First)</span>
+              <span className="min-[400px]:hidden">Oldest</span>
             </button>
           </div>
 
           {/* Time Window Brackets */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-semibold text-muted-foreground mr-1 hidden sm:inline">
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 sm:pb-0 scrollbar-none flex-nowrap max-w-full">
+            <span className="text-xs font-semibold text-muted-foreground mr-1 hidden sm:inline whitespace-nowrap">
               Window:
             </span>
             {(
@@ -219,7 +223,7 @@ function TimelinePage() {
                 key={w.id}
                 type="button"
                 onClick={() => setTimeFilter(w.id)}
-                className={`rounded-md px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
+                className={`rounded-md px-2.5 sm:px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                   timeFilter === w.id
                     ? "bg-primary text-primary-foreground font-semibold shadow-2xs"
                     : "border border-border bg-card text-muted-foreground hover:bg-secondary hover:text-foreground"

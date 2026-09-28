@@ -103,30 +103,32 @@ function ReportsPage() {
                   <span className="label-mono text-muted-foreground">&middot; {threat.source}</span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Users className="size-3.5" />
                     {threat.affectedPeople}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedThreat(threat)}
-                    className="flex items-center gap-1 rounded bg-secondary px-2.5 py-1 text-xs font-medium text-foreground hover:bg-secondary/80"
-                  >
-                    <Eye className="size-3" />
-                    <span>Dossier</span>
-                  </button>
-                  {/* Open Original Source Button */}
-                  <a
-                    href={sourceLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 rounded bg-primary/90 px-3 py-1 text-xs font-semibold text-primary-foreground hover:bg-primary transition-colors shadow-xs"
-                    title="Open original incident source advisory"
-                  >
-                    <span>Source</span>
-                    <ExternalLink className="size-3" />
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedThreat(threat)}
+                      className="flex items-center gap-1 rounded bg-secondary px-2.5 py-1 text-xs font-medium text-foreground hover:bg-secondary/80 cursor-pointer"
+                    >
+                      <Eye className="size-3" />
+                      <span>Dossier</span>
+                    </button>
+                    {/* Open Original Source Button */}
+                    <a
+                      href={sourceLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 rounded bg-primary/90 px-3 py-1 text-xs font-semibold text-primary-foreground hover:bg-primary transition-colors shadow-xs cursor-pointer"
+                      title="Open original incident source advisory"
+                    >
+                      <span>Source</span>
+                      <ExternalLink className="size-3" />
+                    </a>
+                  </div>
                 </div>
               </div>
 

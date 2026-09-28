@@ -76,8 +76,8 @@ export function NewsTicker({ news }: NewsTickerProps) {
 
       {/* When collapsed: single ticker highlight */}
       {!expanded ? (
-        <div className="px-4 py-3 flex items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 truncate">
+        <div className="px-3.5 py-2.5 sm:px-4 sm:py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 min-w-0">
             <span
               className={`shrink-0 rounded px-1.5 py-0.5 text-[0.68rem] font-semibold uppercase ${
                 news[0].urgency === "critical"
@@ -91,8 +91,13 @@ export function NewsTicker({ news }: NewsTickerProps) {
               <ShieldCheck className="size-3" />
               <span>VERIFIED</span>
             </span>
-            <span className="font-semibold text-foreground truncate">{news[0].title}</span>
-            <span className="text-muted-foreground text-xs shrink-0" suppressHydrationWarning>
+            <span className="font-semibold text-foreground truncate max-w-full">
+              {news[0].title}
+            </span>
+            <span
+              className="text-muted-foreground text-xs shrink-0 hidden md:inline"
+              suppressHydrationWarning
+            >
               · {news[0].source} ({getLiveRelativeTime(news[0].timestamp)})
             </span>
           </div>
@@ -101,7 +106,7 @@ export function NewsTicker({ news }: NewsTickerProps) {
             href={news[0].sourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 flex items-center gap-1 text-xs font-medium text-primary hover:underline"
+            className="shrink-0 flex items-center gap-1 text-xs font-medium text-primary hover:underline self-end sm:self-auto"
           >
             Source <ExternalLink className="size-3" />
           </a>

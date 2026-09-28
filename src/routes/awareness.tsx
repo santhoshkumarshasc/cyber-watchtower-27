@@ -64,20 +64,22 @@ function AwarenessPage() {
 
       <div className="grid gap-4 lg:grid-cols-2">
         {data?.awareness.map((item) => (
-          <article key={item.title} className="panel p-5">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="size-4 text-primary" />
-              <h2 className="text-lg font-semibold">{item.title}</h2>
-              <span className="ml-auto rounded-full border border-border bg-secondary/50 px-2 py-0.5 font-mono text-[0.65rem] tracking-widest uppercase text-muted-foreground">
+          <article key={item.title} className="panel p-4 sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <ShieldCheck className="size-4 text-primary shrink-0" />
+                <h2 className="text-base sm:text-lg font-semibold">{item.title}</h2>
+              </div>
+              <span className="rounded-full border border-border bg-secondary/50 px-2 py-0.5 font-mono text-[0.65rem] tracking-widest uppercase text-muted-foreground shrink-0">
                 {item.audience}
               </span>
             </div>
-            <p className="mt-3 text-sm text-muted-foreground">{item.body}</p>
+            <p className="mt-2.5 text-xs sm:text-sm text-muted-foreground">{item.body}</p>
             <ul className="mt-4 space-y-2">
               {item.steps.map((step) => (
-                <li key={step} className="flex items-start gap-2 text-sm">
+                <li key={step} className="flex items-start gap-2 text-xs sm:text-sm">
                   <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-low" />
-                  {step}
+                  <span>{step}</span>
                 </li>
               ))}
             </ul>

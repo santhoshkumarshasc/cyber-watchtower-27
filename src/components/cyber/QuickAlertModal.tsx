@@ -219,7 +219,7 @@ export function QuickAlertModal({ onAlertDispatched, triggerButton }: QuickAlert
         )}
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border p-4 sm:p-6 w-[95vw] sm:w-full">
         <DialogHeader className="border-b border-border/70 pb-3">
           <div className="flex items-center gap-2 text-destructive">
             <Radio className="size-4 animate-pulse" />

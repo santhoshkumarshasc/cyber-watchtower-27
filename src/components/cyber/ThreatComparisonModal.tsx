@@ -114,7 +114,7 @@ export function ThreatComparisonModal({ threats, triggerButton }: ThreatComparis
                   <span>Risk Score</span>
                   <span className="font-bold text-primary">{threatA.riskPercent}%</span>
                 </div>
-                <RiskBar percent={threatA.riskPercent} severity={threatA.severity} />
+                <RiskBar value={threatA.riskPercent} />
               </div>
 
               <div className="space-y-2 text-xs">
@@ -181,7 +181,7 @@ export function ThreatComparisonModal({ threats, triggerButton }: ThreatComparis
                   <span>Risk Score</span>
                   <span className="font-bold text-primary">{threatB.riskPercent}%</span>
                 </div>
-                <RiskBar percent={threatB.riskPercent} severity={threatB.severity} />
+                <RiskBar value={threatB.riskPercent} />
               </div>
 
               <div className="space-y-2 text-xs">

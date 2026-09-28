@@ -71,8 +71,8 @@ Summary: ${threat.summary}`;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-xl border-border bg-card p-0 sm:max-w-2xl max-h-[90vh] flex flex-col">
-        <DialogHeader className="border-b border-border p-5 pb-4">
+      <DialogContent className="max-w-xl border-border bg-card p-0 sm:max-w-2xl max-h-[90vh] flex flex-col w-[95vw] sm:w-full">
+        <DialogHeader className="border-b border-border p-4 sm:p-5 pb-3 sm:pb-4">
           <div className="flex flex-wrap items-center gap-2">
             <span
               className={`rounded-full border px-2.5 py-0.5 font-mono text-[0.68rem] tracking-wider uppercase ${severity.bg} ${severity.text}`}
@@ -82,19 +82,21 @@ Summary: ${threat.summary}`;
             <span className="label-mono">{threat.category}</span>
             <span className="ml-auto label-mono">{threat.publishedLabel}</span>
           </div>
-          <DialogTitle className="mt-2 text-xl font-bold leading-tight">{threat.title}</DialogTitle>
+          <DialogTitle className="mt-2 text-lg sm:text-xl font-bold leading-tight">
+            {threat.title}
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="overflow-y-auto p-5 space-y-5 text-sm">
+        <div className="overflow-y-auto p-4 sm:p-5 space-y-4 sm:space-y-5 text-sm">
           {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-3 gap-3 rounded-lg border border-border bg-secondary/30 p-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 rounded-lg border border-border bg-secondary/30 p-3 min-w-0">
             <div>
               <span className="label-mono text-[0.68rem]">Risk Score</span>
               <div className="mt-1 flex items-center gap-2">
                 <span className={`font-mono text-base font-bold ${severity.text}`}>
                   {Math.round(threat.riskPercent)}%
                 </span>
-                <div className="flex-1">
+                <div className="flex-1 max-w-[100px]">
                   <RiskBar value={threat.riskPercent} />
                 </div>
               </div>
@@ -102,17 +104,17 @@ Summary: ${threat.summary}`;
 
             <div>
               <span className="label-mono text-[0.68rem]">Impact Population</span>
-              <p className="mt-1 flex items-center gap-1.5 text-xs font-medium">
-                <Users className="size-3.5 text-muted-foreground" />
-                {threat.affectedPeople}
+              <p className="mt-1 flex items-center gap-1.5 text-xs font-medium truncate">
+                <Users className="size-3.5 text-muted-foreground shrink-0" />
+                <span className="truncate">{threat.affectedPeople}</span>
               </p>
             </div>
 
             <div>
               <span className="label-mono text-[0.68rem]">Target Regions</span>
               <p className="mt-1 flex items-center gap-1.5 text-xs font-medium truncate">
-                <MapPin className="size-3.5 text-muted-foreground" />
-                {threat.regions.join(", ")}
+                <MapPin className="size-3.5 text-muted-foreground shrink-0" />
+                <span className="truncate">{threat.regions.join(", ")}</span>
               </p>
             </div>
           </div>
@@ -383,12 +385,12 @@ Summary: ${threat.summary}`;
         </div>
 
         {/* Modal Action Footer */}
-        <div className="border-t border-border p-4 flex flex-wrap items-center justify-between gap-3 bg-card/50">
+        <div className="border-t border-border p-3.5 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-card/50">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleCopySummary}
-              className="flex items-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary/80 transition-colors"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-md border border-border bg-secondary px-3 py-2 text-xs font-medium text-foreground hover:bg-secondary/80 transition-colors cursor-pointer"
             >
               {copied ? <Check className="size-3.5 text-primary" /> : <Copy className="size-3.5" />}
               {copied ? "Copied" : "Copy Threat Dossier"}
@@ -401,7 +403,7 @@ Summary: ${threat.summary}`;
               href={threat.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm"
+              className="flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm cursor-pointer"
             >
               <ExternalLink className="size-3.5" /> Open Original Source Advisory
             </a>
@@ -410,7 +412,7 @@ Summary: ${threat.summary}`;
               href={`https://www.google.com/search?q=${encodeURIComponent(threat.title + " cybersecurity advisory")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors cursor-pointer"
             >
               <ExternalLink className="size-3.5" /> Search Source Advisories
             </a>

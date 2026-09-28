@@ -108,8 +108,8 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
           </p>
 
           {/* Risk Metrics */}
-          <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 rounded-md bg-secondary/30 p-2.5">
-            <div>
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3 rounded-md bg-secondary/30 p-2.5 min-w-0">
+            <div className="min-w-0">
               <span className="text-[0.68rem] font-medium text-muted-foreground uppercase">
                 Risk score
               </span>
@@ -123,7 +123,7 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
               </div>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <span className="text-[0.68rem] font-medium text-muted-foreground uppercase">
                 Affected Scope
               </span>
@@ -133,7 +133,7 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
               </p>
             </div>
 
-            <div className="col-span-2 sm:col-span-1">
+            <div className="col-span-2 sm:col-span-1 min-w-0">
               <span className="text-[0.68rem] font-medium text-muted-foreground uppercase">
                 Regions
               </span>
@@ -164,20 +164,20 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
                     href={doc.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-1 rounded border border-border bg-secondary/60 px-2 py-0.5 text-[0.7rem] text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+                    className="flex items-center gap-1 rounded border border-border bg-secondary/60 px-2 py-0.5 text-[0.7rem] text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors max-w-full"
                     title={`Open ${doc.issuer}`}
                   >
                     <FileText className="size-3 text-primary shrink-0" />
-                    <span className="truncate max-w-[200px]">{doc.title}</span>
+                    <span className="truncate max-w-[160px] sm:max-w-[200px]">{doc.title}</span>
                     <ExternalLink className="size-2.5 shrink-0 opacity-70" />
                   </a>
                 ) : (
                   <span
                     key={doc.title}
-                    className="flex items-center gap-1 rounded border border-border bg-secondary/40 px-2 py-0.5 text-[0.7rem] text-muted-foreground"
+                    className="flex items-center gap-1 rounded border border-border bg-secondary/40 px-2 py-0.5 text-[0.7rem] text-muted-foreground max-w-full"
                   >
                     <FileText className="size-3 shrink-0" />
-                    <span className="truncate max-w-[200px]">{doc.title}</span>
+                    <span className="truncate max-w-[160px] sm:max-w-[200px]">{doc.title}</span>
                   </span>
                 ),
               )}
@@ -186,20 +186,20 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
         </div>
 
         {/* Footer Actions: Source & Buttons */}
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
-          <div className="flex items-center gap-2 label-mono text-xs truncate max-w-[220px]">
+        <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-t border-border pt-3">
+          <div className="flex items-center gap-1.5 label-mono text-xs truncate max-w-full sm:max-w-[200px]">
             <ShieldCheck className="size-3.5 text-emerald-400 shrink-0" />
             <span className="truncate text-foreground font-medium" title={threat.source}>
               {threat.verificationAgency || threat.source}
             </span>
           </div>
 
-          <div className="flex items-center gap-2 ml-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end shrink-0">
             {/* View More Details Button */}
             <button
               type="button"
               onClick={handleOpenDetails}
-              className="flex items-center gap-1 rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80 transition-colors cursor-pointer"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1 rounded-md border border-border bg-secondary px-2.5 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/80 transition-colors cursor-pointer"
             >
               <span>View details</span>
               <ChevronRight className="size-3" />
@@ -210,7 +210,7 @@ export function ThreatCard({ threat, onOpenDetails }: ThreatCardProps) {
               href={sourceLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors shadow-xs cursor-pointer"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition-colors shadow-xs cursor-pointer"
               title={`Open official ${threat.source} source page in new tab`}
             >
               <span>Official Advisory</span>

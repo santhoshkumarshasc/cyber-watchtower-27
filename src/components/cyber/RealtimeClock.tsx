@@ -323,7 +323,7 @@ export function RealtimeClock({
 
       <PopoverContent
         align="end"
-        className="w-80 sm:w-96 p-4 bg-card border border-border shadow-lg text-xs space-y-3"
+        className="w-[calc(100vw-2rem)] max-w-sm sm:w-96 p-3.5 sm:p-4 bg-card border border-border shadow-lg text-xs space-y-3"
       >
         <div className="flex items-center justify-between border-b border-border pb-2.5">
           <div className="flex items-center gap-2">
