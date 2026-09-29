@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { Radar, ShieldCheck, Menu, Zap, Sun, Moon } from "lucide-react";
+import { Radar, ShieldCheck, Menu, Zap, Sun, Moon, Mic } from "lucide-react";
 import { useState, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
@@ -15,6 +15,8 @@ import { QuickAlertModal } from "../components/cyber/QuickAlertModal";
 import { RealtimeClock } from "../components/cyber/RealtimeClock";
 import { CommandDrawer } from "../components/cyber/CommandDrawer";
 import { ScrollToTop } from "../components/cyber/ScrollToTop";
+import { GlobalAIAssistantWidget } from "../components/cyber/GlobalAIAssistantWidget";
+import { GeminiLiveVoice } from "../components/cyber/GeminiLiveVoice";
 import { getStoredTheme, applyTheme, toggleLightDark, isCurrentThemeDark } from "../lib/theme";
 import { getUnreadAlertCount } from "../lib/notification-manager";
 import { Toaster } from "../components/ui/sonner";
@@ -131,6 +133,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [commandDrawerOpen, setCommandDrawerOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isLiveVoiceOpen, setIsLiveVoiceOpen] = useState(false);
   const [isDark, setIsDark] = useState<boolean>(() => {
     if (typeof window === "undefined") return false;
     const theme = getStoredTheme();
@@ -230,6 +233,17 @@ function RootComponent() {
                 )}
               </button>
 
+              {/* Gemini Live Voice Header Button */}
+              <button
+                type="button"
+                onClick={() => setIsLiveVoiceOpen(true)}
+                className="hidden md:inline-flex items-center gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-md bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white text-xs font-bold shadow-xs hover:opacity-95 transition-all cursor-pointer ring-1 ring-emerald-400/40 shrink-0 animate-pulse"
+                title="Talk in Real-Time with Gemini Live Voice"
+              >
+                <Mic className="size-3.5" />
+                <span>Live Voice</span>
+              </button>
+
               {/* Quick Threat Alert Modal Button (Hidden on mobile; quick broadcast is inside Menu) */}
               <QuickAlertModal
                 triggerButton={
@@ -295,6 +309,12 @@ function RootComponent() {
 
         {/* Smooth Scroll to Top Action Button */}
         <ScrollToTop />
+
+        {/* Global Floating AI Agent Assistant (Voice & Chat Support) */}
+        <GlobalAIAssistantWidget />
+
+        {/* Global Real-Time Gemini Live Voice Session */}
+        <GeminiLiveVoice isOpen={isLiveVoiceOpen} onClose={() => setIsLiveVoiceOpen(false)} />
 
         {/* Global Toast Notifications (Sonner) */}
         <Toaster position="bottom-right" richColors />

@@ -697,18 +697,18 @@ function OpenSourceHubPage() {
                     )}
 
                     {/* Upstream Thread Link */}
-                    <div className="flex items-center justify-between pt-2 border-t border-border/70 text-xs">
-                      <span className="text-muted-foreground">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pt-2 border-t border-border/70 text-xs">
+                      <span className="text-muted-foreground shrink-0">
                         Original Thread / Advisory Source:
                       </span>
                       <a
                         href={item.threadUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-primary hover:underline font-mono text-[0.72rem]"
+                        className="inline-flex items-center gap-1.5 text-primary hover:underline font-mono text-[0.72rem] break-all sm:truncate max-w-full"
                       >
-                        <span>{item.threadName}</span>
-                        <ExternalLink className="size-3" />
+                        <span className="truncate">{item.threadName}</span>
+                        <ExternalLink className="size-3 shrink-0" />
                       </a>
                     </div>
                   </div>

@@ -106,7 +106,7 @@ let inFlightRequest: Promise<Briefing> | null = null;
 
 const CACHE_TTL_MS = 60 * 1000; // 1 minute fresh cache for real-time cadence
 const ERROR_COOLDOWN_MS = 60 * 1000; // 1 minute cooldown if all models fail
-const CANDIDATE_MODELS = ["gemini-2.5-flash", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
+const CANDIDATE_MODELS = ["gemini-2.5-flash", "gemini-3.1-flash-lite"];
 
 async function generateLiveBriefingWithFallback(geminiKey: string): Promise<Briefing | null> {
   const ai = new GoogleGenAI({

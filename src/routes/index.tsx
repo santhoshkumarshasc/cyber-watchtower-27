@@ -705,9 +705,9 @@ function FeedPage() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <p className="text-base sm:text-lg font-bold text-foreground mt-0.5">{value}</p>
+    <div className="min-w-0">
+      <span className="text-xs font-medium text-muted-foreground truncate block">{label}</span>
+      <p className="text-base sm:text-lg font-bold text-foreground mt-0.5 truncate">{value}</p>
     </div>
   );
 }

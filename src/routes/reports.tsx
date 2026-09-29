@@ -153,11 +153,13 @@ function ReportsPage() {
                       key={doc.title}
                       className="flex items-start justify-between gap-3 rounded-md border border-border bg-secondary/30 p-3 hover:border-primary/40 transition-colors"
                     >
-                      <div className="flex items-start gap-2.5">
+                      <div className="flex items-start gap-2.5 min-w-0">
                         <FileText className="mt-0.5 size-4 shrink-0 text-primary" />
-                        <div>
-                          <p className="text-xs sm:text-sm font-medium leading-snug">{doc.title}</p>
-                          <p className="label-mono text-[0.68rem] mt-1 text-muted-foreground">
+                        <div className="min-w-0">
+                          <p className="text-xs sm:text-sm font-medium leading-snug break-words">
+                            {doc.title}
+                          </p>
+                          <p className="label-mono text-[0.68rem] mt-1 text-muted-foreground truncate">
                             {doc.kind} &middot; {doc.issuer}
                           </p>
                         </div>
